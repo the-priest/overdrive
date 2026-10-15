@@ -65,7 +65,13 @@ jobs:
         run: ./gradlew :app:testDebugUnitTest --stacktrace
 
       - name: Lint
-        run: ./gradlew :app:lintDebug --stacktrace
+        run: ./gradlew :app:lintDebug
+
+      - name: Print lint findings
+        if: always()
+        run: |
+          f=app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt
+          [ -f "$f" ] && grep -E "(Warning|Error):" "$f" || true
 
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
