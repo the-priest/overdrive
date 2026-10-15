@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Overdrive</string>
+    <string name="tab_songs">Songs</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_artists">Artists</string>
+    <string name="tab_favorites">Favorites</string>
+
+    <string name="menu_search">Search</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_equalizer">Equalizer &amp; Boost</string>
+    <string name="menu_shuffle_all">Shuffle all</string>
+    <string name="menu_sort">Sort</string>
+
+    <string name="now_playing">Now Playing</string>
+    <string name="settings">Settings</string>
+    <string name="equalizer">Equalizer</string>
+    <string name="volume_boost">Volume Boost</string>
+
+    <string name="unknown_artist">Unknown artist</string>
+    <string name="unknown_album">Unknown album</string>
+    <string name="empty_songs">No music found.\nTap to grant access or rescan.</string>
+    <string name="empty_favorites">No favorites yet.\nLong-press a song to add one.</string>
+    <string name="loading">Scanning your library…</string>
+    <string name="permission_needed">Access to your audio files is needed to find and play music.</string>
+    <string name="grant_access">Grant access</string>
+    <string name="rescan">Rescan library</string>
+
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">Repeat</string>
+    <string name="favorite">Favorite</string>
+    <string name="add_favorite">Add to favorites</string>
+    <string name="remove_favorite">Remove from favorites</string>
+    <string name="play_this">Play now</string>
+    <string name="search_hint">Search your library</string>
+
+    <string name="play_next">Play next</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="go_to_artist">Go to artist</string>
+    <string name="go_to_album">Go to album</string>
+    <string name="details">Details</string>
+
+    <!-- Settings -->
+    <string name="playback_section">Playback</string>
+    <string name="pause_on_disconnect">Pause when headphones unplugged</string>
+    <string name="pause_on_disconnect_desc">Stop playback when the headset is disconnected</string>
+    <string name="shuffle_default">Start in shuffle mode</string>
+    <string name="shuffle_default_desc">Shuffle the queue whenever playback starts fresh</string>
+    <string name="min_length">Hide short clips</string>
+    <string name="min_length_desc">Skip tracks shorter than the selected length</string>
+    <string name="appearance_section">Appearance</string>
+    <string name="accent_color">Accent color</string>
+    <string name="accent_red">Blood Red</string>
+    <string name="accent_amber">Amped Amber</string>
+    <string name="accent_blue">Steel Blue</string>
+    <string name="sound_section">Sound</string>
+    <string name="open_equalizer">Equalizer, bass &amp; volume boost</string>
+    <string name="about_section">About</string>
+    <string name="about_text">Overdrive — a bare-knuckle music player. No ads. No subscriptions. Just your music, loud.</string>
+    <string name="version">Version</string>
+
+    <!-- Equalizer -->
+    <string name="enable_equalizer">Enable equalizer</string>
+    <string name="preset">Preset</string>
+    <string name="eq_disabled_hint">Equalizer is off. Turn it on to shape your sound.</string>
+    <string name="bass_boost">Bass boost</string>
+    <string name="virtualizer">3D / Virtualizer</string>
+    <string name="boost_warning" formatted="false">Warning: pushing past 150% can distort on weaker speakers. Crank responsibly.</string>
+    <string name="reset">Reset</string>
+    <string name="boost_off">Boost off</string>
+    <string name="boost_on">Boost on</string>
+
+    <string name="notif_channel_name">Playback</string>
+    <string name="notif_channel_desc">Music playback controls</string>
+</resources>
