@@ -3,95 +3,135 @@ package com.overdrive.player.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.session.MediaController
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
-import com.overdrive.player.OverdriveApp
 import com.overdrive.player.R
-import com.overdrive.player.data.Song
 import com.overdrive.player.databinding.ActivityMainBinding
 import com.overdrive.player.player.Playback
 import com.overdrive.player.player.PlayerConnection
+import com.overdrive.player.player.audioUri
+import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
+import com.overdrive.player.util.applySystemBarPadding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private val prefs by lazy { OverdriveApp.from(this).prefs }
 
-    private var controller: MediaController? = null
+    private var themeAccent = 0
     private val handler = Handler(Looper.getMainLooper())
-    private var progressTask: Runnable? = null
+    private var searchItem: MenuItem? = null
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        if (hasAudioPermission()) viewModel.load()
-    }
+    ) { onPermissionResult() }
 
     private val settingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        when (result.resultCode) {
-            RESULT_OK -> viewModel.load()
-            RESULT_FIRST_USER -> recreate()
+        if (result.resultCode == SettingsActivity.RESULT_RESCAN) rescan()
+    }
+
+    private val progressTask = object : Runnable {
+        override fun run() {
+            updateMiniProgress()
+            handler.postDelayed(this, PROGRESS_INTERVAL_MS)
         }
     }
 
     private val playerListener = object : Player.Listener {
-        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) =
-            updateMiniPlayer()
-
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            updateMiniPlayer()
-            if (isPlaying) startProgressLoop() else stopProgressLoop()
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (events.containsAny(
+                    Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    Player.EVENT_IS_PLAYING_CHANGED,
+                    Player.EVENT_PLAYBACK_STATE_CHANGED,
+                    Player.EVENT_MEDIA_METADATA_CHANGED,
+                    Player.EVENT_TIMELINE_CHANGED
+                )
+            ) {
+                updateMiniPlayer(player)
+            }
         }
+    }
 
-        override fun onPlaybackStateChanged(playbackState: Int) = updateMiniPlayer()
+    private val closeSearchCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            searchItem?.collapseActionView()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        ThemeHelper.apply(this)
+        themeAccent = ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarPadding(top = true, bottom = true)
 
         setupToolbar()
         setupPager()
         setupMiniPlayer()
-        ensurePermissions()
+        onBackPressedDispatcher.addCallback(this, closeSearchCallback)
+
+        PlayerConnection.init(this)
+        PlayerConnection.bind(this, this, playerListener) { updateMiniPlayer(it) }
+
+        if (savedInstanceState == null) {
+            ensurePermissions()
+            handleIntent(intent)
+        } else {
+            refreshPermissionState()
+            if (viewModel.songs().isEmpty() && viewModel.hasPermission.value == true) viewModel.load()
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        PlayerConnection.init(this)
-        PlayerConnection.withController(this) { c ->
-            controller = c
-            c.addListener(playerListener)
-            updateMiniPlayer()
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The accent was changed in Settings: rebuild with the new theme.
+        if (ThemeHelper.accentIndex(this) != themeAccent) {
+            recreate()
+            return
         }
+        // Permission granted from the system settings screen while we were away.
+        val before = viewModel.hasPermission.value
+        refreshPermissionState()
+        if (before == false && viewModel.hasPermission.value == true) viewModel.load()
     }
 
     override fun onStop() {
         super.onStop()
-        controller?.removeListener(playerListener)
-        stopProgressLoop()
+        handler.removeCallbacks(progressTask)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_OPEN_PLAYER, false) == true) {
+            intent.removeExtra(EXTRA_OPEN_PLAYER)
+            startActivity(Intent(this, NowPlayingActivity::class.java))
+        }
     }
 
     // --- setup --------------------------------------------------------------
@@ -99,66 +139,60 @@ class MainActivity : AppCompatActivity() {
     private fun setupToolbar() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_equalizer -> {
-                    startActivity(Intent(this, EqualizerActivity::class.java)); true
-                }
-
-                R.id.action_settings -> {
-                    settingsLauncher.launch(Intent(this, SettingsActivity::class.java)); true
-                }
-
-                R.id.action_shuffle_all -> {
-                    shuffleAll(); true
-                }
-
-                R.id.action_rescan -> {
-                    ensurePermissions(); true
-                }
-
-                else -> false
+                R.id.action_equalizer ->
+                    startActivity(Intent(this, EqualizerActivity::class.java))
+                R.id.action_settings ->
+                    settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
+                R.id.action_shuffle_all -> Playback.shuffle(this, viewModel.songs())
+                R.id.action_queue -> startActivity(Intent(this, QueueActivity::class.java))
+                R.id.action_rescan -> rescan()
+                else -> return@setOnMenuItemClickListener false
             }
+            true
         }
 
-        val searchItem = binding.toolbar.menu.findItem(R.id.action_search)
-        configureSearch(searchItem.actionView as? SearchView)
-        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+        val item = binding.toolbar.menu.findItem(R.id.action_search)
+        searchItem = item
+        (item.actionView as? SearchView)?.apply {
+            queryHint = getString(R.string.search_hint)
+            maxWidth = Int.MAX_VALUE
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.setQuery(newText.orEmpty())
+                    return true
+                }
+            })
+        }
+        item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                configureSearch(item.actionView as? SearchView)
-                binding.pager.setCurrentItem(0, false)
+                closeSearchCallback.isEnabled = true
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                closeSearchCallback.isEnabled = false
                 viewModel.setQuery("")
                 return true
             }
         })
     }
 
-    private fun configureSearch(searchView: SearchView?) {
-        if (searchView == null || searchView.getTag(R.id.action_search) != null) return
-        searchView.setTag(R.id.action_search, true)
-        searchView.queryHint = getString(R.string.search_hint)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.setQuery(newText.orEmpty())
-                return true
-            }
-        })
-    }
-
     private fun setupPager() {
-        val titles = arrayOf(
-            getString(R.string.tab_songs),
-            getString(R.string.tab_albums),
-            getString(R.string.tab_artists),
-            getString(R.string.tab_favorites)
+        val titles = intArrayOf(
+            R.string.tab_songs,
+            R.string.tab_albums,
+            R.string.tab_artists,
+            R.string.tab_favorites
         )
         binding.pager.adapter = LibraryPagerAdapter(this)
         binding.pager.offscreenPageLimit = 1
         TabLayoutMediator(binding.tabs, binding.pager) { tab, position ->
-            tab.text = titles[position]
+            tab.setText(titles[position])
         }.attach()
     }
 
@@ -167,7 +201,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, NowPlayingActivity::class.java))
         }
         binding.miniPlayPause.setOnClickListener { Playback.togglePlayPause(this) }
-        binding.miniNext.setOnClickListener { controller?.seekToNextMediaItem() }
+        binding.miniNext.setOnClickListener { PlayerConnection.controller?.seekToNextMediaItem() }
+        binding.miniQueue.setOnClickListener {
+            startActivity(Intent(this, QueueActivity::class.java))
+        }
     }
 
     // --- permissions --------------------------------------------------------
@@ -183,6 +220,10 @@ class MainActivity : AppCompatActivity() {
         ContextCompat.checkSelfPermission(this, audioPermission()) ==
             PackageManager.PERMISSION_GRANTED
 
+    private fun refreshPermissionState() {
+        viewModel.hasPermission.value = hasAudioPermission()
+    }
+
     private fun ensurePermissions() {
         val needed = ArrayList<String>()
         if (!hasAudioPermission()) needed.add(audioPermission())
@@ -192,124 +233,78 @@ class MainActivity : AppCompatActivity() {
         ) {
             needed.add(Manifest.permission.POST_NOTIFICATIONS)
         }
-        if (needed.isEmpty()) viewModel.load() else permissionLauncher.launch(needed.toTypedArray())
+        if (needed.isEmpty()) onPermissionResult() else permissionLauncher.launch(needed.toTypedArray())
     }
 
+    private fun onPermissionResult() {
+        refreshPermissionState()
+        if (hasAudioPermission()) viewModel.load()
+    }
+
+    /** Called from the empty state: ask again, or send the user to settings. */
     fun onGrantOrRescan() {
-        if (hasAudioPermission()) viewModel.load() else ensurePermissions()
-    }
-
-    // --- playback -----------------------------------------------------------
-
-    fun playList(list: List<Song>, index: Int) {
-        Playback.start(this, list, index, prefs.shuffleDefault, prefs.repeatMode)
-    }
-
-    private fun shuffleAll() {
-        val all = viewModel.songs.value.orEmpty()
-        if (all.isEmpty()) return
-        Playback.start(this, all, all.indices.random(), true, prefs.repeatMode)
-    }
-
-    fun openCollection(type: String, id: Long, name: String) {
-        startActivity(
-            Intent(this, CollectionActivity::class.java).apply {
-                putExtra(CollectionActivity.EXTRA_TYPE, type)
-                putExtra(CollectionActivity.EXTRA_ID, id)
-                putExtra(CollectionActivity.EXTRA_TITLE, name)
-            }
-        )
-    }
-
-    fun showSongMenu(song: Song, anchor: View) {
-        val popup = PopupMenu(this, anchor)
-        popup.inflate(R.menu.menu_song)
-        popup.menu.findItem(R.id.action_favorite).title =
-            if (viewModel.isFavorite(song.id)) getString(R.string.remove_favorite)
-            else getString(R.string.add_favorite)
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_play -> {
-                    Playback.start(this, listOf(song), 0, false, prefs.repeatMode); true
-                }
-
-                R.id.action_play_next -> {
-                    Playback.playNext(this, song); true
-                }
-
-                R.id.action_add_queue -> {
-                    Playback.enqueue(this, song); true
-                }
-
-                R.id.action_favorite -> {
-                    viewModel.toggleFavorite(song); true
-                }
-
-                R.id.action_go_to_album -> {
-                    openCollection(
-                        CollectionActivity.TYPE_ALBUM,
-                        song.albumId,
-                        song.album.ifBlank { getString(R.string.tab_albums) }
-                    ); true
-                }
-
-                R.id.action_go_to_artist -> {
-                    openCollection(
-                        CollectionActivity.TYPE_ARTIST,
-                        song.artistId,
-                        song.artist.ifBlank { getString(R.string.tab_artists) }
-                    ); true
-                }
-
-                else -> false
+        when {
+            hasAudioPermission() -> rescan()
+            shouldShowRequestPermissionRationale(audioPermission()) ||
+                viewModel.hasPermission.value == null -> ensurePermissions()
+            else -> {
+                // "Don't ask again" was chosen: the dialog will not show anymore.
+                Toast.makeText(this, R.string.permission_denied_forever, Toast.LENGTH_LONG).show()
+                startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .setData(Uri.fromParts("package", packageName, null))
+                )
             }
         }
-        popup.show()
+    }
+
+    private fun rescan() {
+        if (!hasAudioPermission()) {
+            onGrantOrRescan()
+            return
+        }
+        ArtworkLoader.clear()
+        Toast.makeText(this, R.string.rescanning, Toast.LENGTH_SHORT).show()
+        viewModel.load()
     }
 
     // --- mini player --------------------------------------------------------
 
-    private fun updateMiniPlayer() {
-        val c = controller ?: return
-        val item = c.currentMediaItem
+    private fun updateMiniPlayer(player: Player) {
+        val item: MediaItem? = player.currentMediaItem
+        viewModel.nowPlayingId.value = item?.songId ?: -1L
         if (item == null) {
             binding.miniPlayer.visibility = View.GONE
+            handler.removeCallbacks(progressTask)
             return
         }
         binding.miniPlayer.visibility = View.VISIBLE
-        binding.miniTitle.text = item.mediaMetadata.title ?: getString(R.string.app_name)
-        binding.miniArtist.text = item.mediaMetadata.artist ?: ""
+        val metadata = item.mediaMetadata
+        binding.miniTitle.text = metadata.title ?: getString(R.string.app_name)
+        binding.miniArtist.text = metadata.artist ?: ""
         binding.miniPlayPause.setImageResource(
-            if (c.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+            if (player.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
         )
+        binding.miniPlayPause.contentDescription =
+            getString(if (player.isPlaying) R.string.pause else R.string.play)
         ArtworkLoader.load(
-            this, binding.miniArt, item.mediaMetadata.artworkUri, null, 128
+            this, binding.miniArt, metadata.artworkUri, item.audioUri, 128
         )
         updateMiniProgress()
+        handler.removeCallbacks(progressTask)
+        if (player.isPlaying) handler.postDelayed(progressTask, PROGRESS_INTERVAL_MS)
     }
 
     private fun updateMiniProgress() {
-        val c = controller ?: return
+        val c = PlayerConnection.controller ?: return
         val duration = c.duration
         val position = c.currentPosition
         binding.miniProgress.progress =
             if (duration > 0) ((position * 1000L) / duration).toInt().coerceIn(0, 1000) else 0
     }
 
-    private fun startProgressLoop() {
-        stopProgressLoop()
-        val task = object : Runnable {
-            override fun run() {
-                updateMiniProgress()
-                handler.postDelayed(this, 500)
-            }
-        }
-        progressTask = task
-        handler.postDelayed(task, 500)
-    }
-
-    private fun stopProgressLoop() {
-        progressTask?.let { handler.removeCallbacks(it) }
-        progressTask = null
+    companion object {
+        const val EXTRA_OPEN_PLAYER = "open_player"
+        private const val PROGRESS_INTERVAL_MS = 500L
     }
 }

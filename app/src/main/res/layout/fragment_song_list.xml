@@ -1,60 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="12dp"
-        android:scrollbars="none" />
-
+    <!-- Song count, sort and shuffle. Only the Songs and Favorites tabs show it. -->
     <LinearLayout
-        android:id="@+id/emptyView"
+        android:id="@+id/headerRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="32dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="4dp"
         android:visibility="gone">
 
-        <ImageView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:alpha="0.35"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_music_note"
-            app:tint="@color/text_secondary" />
-
         <TextView
-            android:id="@+id/emptyText"
+            android:id="@+id/countText"
+            style="@style/TextAppearance.Overdrive.Overline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/text_secondary" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/sortChip"
+            style="@style/Widget.Overdrive.Chip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:text="@string/empty_songs"
-            android:textColor="@color/text_secondary"
-            android:textSize="15sp" />
+            android:layout_marginEnd="8dp"
+            app:chipIcon="@drawable/ic_sort"
+            app:chipIconSize="16dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/emptyAction"
+            android:id="@+id/shuffleButton"
+            style="@style/Widget.Material3.Button.Icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/rescan"
-            android:visibility="gone" />
+            android:layout_height="40dp"
+            android:fontFamily="sans-serif-condensed"
+            android:letterSpacing="0.08"
+            android:text="@string/shuffle"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_shuffle"
+            app:iconSize="18dp" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminateTint="?attr/colorPrimary"
-        android:visibility="gone" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="4dp"
+            android:paddingBottom="12dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbarThumbVertical="@drawable/bg_tab_indicator"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/emptyIcon"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:alpha="0.35"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_music_note"
+                app:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/emptyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/empty_songs"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/emptyAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/rescan"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="?attr/colorPrimary"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

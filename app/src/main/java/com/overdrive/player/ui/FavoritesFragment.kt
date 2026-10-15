@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.overdrive.player.R
 import com.overdrive.player.data.Song
 import com.overdrive.player.databinding.FragmentSongListBinding
+import com.overdrive.player.player.Playback
 
 class FavoritesFragment : Fragment() {
 
@@ -18,6 +19,7 @@ class FavoritesFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
     private lateinit var adapter: SongAdapter
+    private var lastSongs: List<Song> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,24 +31,29 @@ class FavoritesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = requireActivity() as MainActivity
         adapter = SongAdapter(
-            onPlay = { list, index -> activity.playList(list, index) },
-            onMenu = { song, anchor -> activity.showSongMenu(song, anchor) }
+            onPlay = { list, index -> Playback.start(requireContext(), list, index) },
+            onMenu = { song, anchor -> SongMenu.show(requireActivity(), song, anchor) }
         )
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
         binding.recycler.adapter = adapter
         binding.emptyText.setText(R.string.empty_favorites)
+        binding.emptyIcon.setImageResource(R.drawable.ic_favorite_border)
         binding.emptyAction.visibility = View.GONE
+        binding.sortChip.visibility = View.GONE
+        binding.shuffleButton.setOnClickListener {
+            Playback.shuffle(requireContext(), lastSongs)
+        }
 
         viewModel.favorites.observe(viewLifecycleOwner) { list ->
+            lastSongs = list
             adapter.submitList(list)
-            updateEmptyState(list)
+            binding.headerRow.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
+            binding.countText.text =
+                resources.getQuantityString(R.plurals.songs, list.size, list.size)
+            binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         }
-    }
-
-    private fun updateEmptyState(list: List<Song>) {
-        binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        viewModel.nowPlayingId.observe(viewLifecycleOwner) { adapter.setPlayingId(it) }
     }
 
     override fun onDestroyView() {

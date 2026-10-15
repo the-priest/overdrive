@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.overdrive.player.data.Artist
+import com.overdrive.player.R
 import com.overdrive.player.databinding.FragmentSongListBinding
 
 class ArtistsFragment : Fragment() {
@@ -28,23 +28,20 @@ class ArtistsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = requireActivity() as MainActivity
         adapter = ArtistAdapter { artist ->
-            activity.openCollection(CollectionActivity.TYPE_ARTIST, artist.id, artist.name)
+            SongMenu.openArtist(requireContext(), artist.key, artist.name)
         }
         binding.recycler.layoutManager = LinearLayoutManager(requireContext())
         binding.recycler.adapter = adapter
-        binding.emptyText.text = "No artists found."
+        binding.emptyText.setText(R.string.empty_artists)
+        binding.emptyIcon.setImageResource(R.drawable.ic_artist)
         binding.emptyAction.visibility = View.GONE
 
-        viewModel.artists.observe(viewLifecycleOwner) { list ->
+        viewModel.visibleArtists.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
-            updateEmptyState(list)
+            binding.emptyView.visibility =
+                if (list.isEmpty() && viewModel.loading.value != true) View.VISIBLE else View.GONE
         }
-    }
-
-    private fun updateEmptyState(list: List<Artist>) {
-        binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

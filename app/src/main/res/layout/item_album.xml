@@ -10,13 +10,16 @@
         android:id="@+id/albumArt"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_album"
+        android:src="@drawable/placeholder_art"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.Art" />
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.ArtLarge"
+        app:strokeColor="@color/steel_edge"
+        app:strokeWidth="1dp" />
 
     <TextView
         android:id="@+id/albumName"
@@ -24,9 +27,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
+        android:fontFamily="sans-serif-condensed"
         android:maxLines="1"
         android:textColor="@color/text_primary"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

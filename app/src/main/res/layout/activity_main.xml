@@ -11,9 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
+        app:logo="@drawable/ic_logo_bolt"
         app:menu="@menu/menu_main"
         app:title="@string/app_name"
-        app:titleTextAppearance="@style/Widget.Overdrive.Toolbar.Title" />
+        app:titleMarginStart="10dp"
+        app:titleTextAppearance="@style/TextAppearance.Overdrive.Logo" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -21,12 +23,20 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:tabGravity="fill"
+        app:tabIndicator="@drawable/bg_tab_indicator"
         app:tabIndicatorColor="?attr/colorPrimary"
         app:tabIndicatorFullWidth="false"
+        app:tabIndicatorHeight="3dp"
         app:tabMode="fixed"
         app:tabRippleColor="@color/surface_3"
         app:tabSelectedTextColor="@color/text_primary"
-        app:tabTextColor="@color/text_secondary" />
+        app:tabTextAppearance="@style/TextAppearance.Overdrive.Tab"
+        app:tabTextColor="@color/text_muted" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
@@ -38,36 +48,34 @@
         android:id="@+id/miniPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface_2"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_mini_player"
         android:clickable="true"
-        android:elevation="12dp"
+        android:elevation="10dp"
         android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="vertical"
         android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/miniProgress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:max="1000"
-            android:progressTint="?attr/colorPrimary"
-            android:progressBackgroundTint="@color/surface_3" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="8dp">
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="6dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/miniArt"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:contentDescription="@null"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_music_note"
+                android:src="@drawable/placeholder_art"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.Art" />
 
             <LinearLayout
@@ -82,6 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:fontFamily="sans-serif-condensed"
                     android:maxLines="1"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
@@ -98,6 +107,15 @@
             </LinearLayout>
 
             <ImageButton
+                android:id="@+id/miniQueue"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_icon_ripple"
+                android:contentDescription="@string/menu_queue"
+                android:src="@drawable/ic_queue_music"
+                app:tint="@color/text_secondary" />
+
+            <ImageButton
                 android:id="@+id/miniPlayPause"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
@@ -108,13 +126,24 @@
 
             <ImageButton
                 android:id="@+id/miniNext"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/bg_icon_ripple"
                 android:contentDescription="@string/next"
                 android:src="@drawable/ic_skip_next"
                 app:tint="@color/text_primary" />
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/miniProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginBottom="6dp"
+            android:max="1000"
+            android:progressBackgroundTint="@color/surface_3"
+            android:progressTint="?attr/colorPrimary" />
     </LinearLayout>
 
 </LinearLayout>

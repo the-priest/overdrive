@@ -12,69 +12,117 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
         app:menu="@menu/menu_now_playing"
+        app:navigationContentDescription="@string/now_playing"
+        app:navigationIcon="@drawable/ic_expand_more"
         app:title="@string/now_playing"
-        app:titleTextAppearance="@style/Widget.Overdrive.Toolbar.Title" />
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Overdrive.Tab" />
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingHorizontal="28dp">
+        android:paddingHorizontal="28dp"
+        android:paddingVertical="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/art"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@null"
+            android:elevation="18dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_music_note"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.Art" />
-    </FrameLayout>
+            android:src="@drawable/placeholder_art"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.ArtLarge" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="24dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="24dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
-        <TextView
-            android:id="@+id/title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="2"
-            android:textColor="@color/text_primary"
-            android:textSize="21sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/artist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:fontFamily="sans-serif-condensed"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/album"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/favorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_icon_ripple"
+                android:contentDescription="@string/favorite"
+                android:src="@drawable/ic_favorite_border"
+                app:tint="@color/text_secondary" />
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/seek"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="12dp"
             android:max="1000"
+            android:maxHeight="4dp"
+            android:minHeight="4dp"
             android:paddingHorizontal="0dp"
             android:progressBackgroundTint="@color/surface_3"
             android:progressTint="?attr/colorPrimary"
-            android:thumbTint="?attr/colorPrimary" />
+            android:thumbTint="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal">
 
             <TextView
@@ -82,7 +130,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="0:00"
+                android:fontFeatureSettings="tnum"
+                android:text="@string/zero_time"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
@@ -90,7 +139,8 @@
                 android:id="@+id/timeTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0:00"
+                android:fontFeatureSettings="tnum"
+                android:text="@string/zero_time"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -98,14 +148,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/shuffle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/bg_icon_ripple"
                 android:contentDescription="@string/shuffle"
                 android:src="@drawable/ic_shuffle"
@@ -122,18 +172,23 @@
                 android:layout_height="52dp"
                 android:background="@drawable/bg_icon_ripple"
                 android:contentDescription="@string/previous"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
                 android:src="@drawable/ic_skip_previous"
                 app:tint="@color/text_primary" />
 
             <ImageButton
                 android:id="@+id/playPause"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_marginHorizontal="10dp"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_marginHorizontal="14dp"
                 android:background="@drawable/bg_play_button"
                 android:contentDescription="@string/play"
+                android:elevation="12dp"
+                android:scaleType="fitCenter"
+                android:padding="20dp"
                 android:src="@drawable/ic_play"
-                app:tint="@color/white" />
+                app:tint="?attr/colorOnPrimary" />
 
             <ImageButton
                 android:id="@+id/next"
@@ -141,6 +196,8 @@
                 android:layout_height="52dp"
                 android:background="@drawable/bg_icon_ripple"
                 android:contentDescription="@string/next"
+                android:scaleType="fitCenter"
+                android:padding="10dp"
                 android:src="@drawable/ic_skip_next"
                 app:tint="@color/text_primary" />
 
@@ -151,47 +208,140 @@
 
             <ImageButton
                 android:id="@+id/repeat"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/bg_icon_ripple"
                 android:contentDescription="@string/repeat"
                 android:src="@drawable/ic_repeat"
                 app:tint="@color/text_secondary" />
         </LinearLayout>
 
+        <!-- Tool row: boost, EQ, sleep timer, queue -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/favorite"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_icon_ripple"
-                android:contentDescription="@string/favorite"
-                android:src="@drawable/ic_favorite_border"
-                app:tint="@color/text_secondary" />
-
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/boost"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="28dp"
-                android:background="@drawable/bg_icon_ripple"
-                android:contentDescription="@string/volume_boost"
-                android:src="@drawable/ic_bolt"
-                app:tint="@color/text_secondary" />
+                style="@style/NowPlayingTool">
 
-            <ImageButton
+                <ImageView
+                    android:id="@+id/boostIcon"
+                    style="@style/NowPlayingToolIcon"
+                    android:src="@drawable/ic_bolt" />
+
+                <TextView
+                    android:id="@+id/boostLabel"
+                    style="@style/NowPlayingToolLabel"
+                    android:text="@string/tool_boost" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/equalizer"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_icon_ripple"
-                android:contentDescription="@string/equalizer"
-                android:src="@drawable/ic_equalizer"
+                style="@style/NowPlayingTool">
+
+                <ImageView
+                    style="@style/NowPlayingToolIcon"
+                    android:src="@drawable/ic_equalizer" />
+
+                <TextView
+                    style="@style/NowPlayingToolLabel"
+                    android:text="@string/tool_eq" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sleep"
+                style="@style/NowPlayingTool">
+
+                <ImageView
+                    android:id="@+id/sleepIcon"
+                    style="@style/NowPlayingToolIcon"
+                    android:src="@drawable/ic_bedtime" />
+
+                <TextView
+                    android:id="@+id/sleepLabel"
+                    style="@style/NowPlayingToolLabel"
+                    android:text="@string/tool_sleep" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/queue"
+                style="@style/NowPlayingTool">
+
+                <ImageView
+                    style="@style/NowPlayingToolIcon"
+                    android:src="@drawable/ic_queue_music" />
+
+                <TextView
+                    style="@style/NowPlayingToolLabel"
+                    android:text="@string/tool_queue" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Up next peek -->
+        <LinearLayout
+            android:id="@+id/upNextCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/upNextArt"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder_art"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.Art" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/upNextLabel"
+                    style="@style/TextAppearance.Overdrive.Overline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/up_next_label" />
+
+                <TextView
+                    android:id="@+id/upNextTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-condensed"
+                    android:maxLines="1"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/upNextCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_queue_music"
                 app:tint="@color/text_secondary" />
         </LinearLayout>
     </LinearLayout>

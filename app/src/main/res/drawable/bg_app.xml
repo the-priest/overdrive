@@ -2,10 +2,18 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
+            <solid android:color="@color/bg" />
+        </shape>
+    </item>
+    <!-- A faint red glow bleeding in from the top, like stage lights. -->
+    <item>
+        <shape android:shape="rectangle">
             <gradient
                 android:angle="270"
+                android:centerY="0.35"
                 android:startColor="@color/bg_grad_top"
-                android:endColor="@color/bg" />
+                android:centerColor="#0008080A"
+                android:endColor="#0008080A" />
         </shape>
     </item>
 </layer-list>

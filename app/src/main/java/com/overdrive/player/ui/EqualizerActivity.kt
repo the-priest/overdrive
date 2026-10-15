@@ -10,12 +10,16 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.material.chip.Chip
 import com.overdrive.player.OverdriveApp
 import com.overdrive.player.R
+import com.overdrive.player.audio.RockPresets
 import com.overdrive.player.databinding.ActivityEqualizerBinding
 import com.overdrive.player.util.ThemeHelper
+import com.overdrive.player.util.applySystemBarPadding
 import java.util.Locale
 
 /**
@@ -30,7 +34,7 @@ class EqualizerActivity : AppCompatActivity() {
     private val prefs by lazy { app.prefs }
     private val effects by lazy { app.audioEffects }
 
-    private var probe: Equalizer? = null
+    private var eqAvailable = true
     private var bandCount = 0
     private var bandMin = -1500
     private var bandMax = 1500
@@ -39,19 +43,23 @@ class EqualizerActivity : AppCompatActivity() {
 
     private val bandSeekBars = ArrayList<SeekBar>()
     private val bandLabels = ArrayList<TextView>()
+    private var updatingChips = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityEqualizerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarPadding(top = true, bottom = true)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.eqSwitch.isChecked = prefs.equalizerEnabled
 
         readBandInfo()
         buildBands()
-        buildPresets()
+        buildRockPresets()
+        buildDevicePresets()
         setupBoostSeekBars()
 
         binding.eqSwitch.setOnCheckedChangeListener { _, checked ->
@@ -61,24 +69,25 @@ class EqualizerActivity : AppCompatActivity() {
         binding.resetButton.setOnClickListener {
             effects.resetEqualizer(bandCount)
             refreshBandRows()
-            if (presetNames.isNotEmpty()) binding.presetDropdown.setText("", false)
+            clearPresetSelection()
         }
 
         refreshBandRows()
         updateEnabledState()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        probe?.release()
-        probe = null
-    }
-
     // --- equalizer bands ----------------------------------------------------
 
     private fun readBandInfo() {
-        val eq = effects.equalizer
-            ?: runCatching { Equalizer(0, 0) }.getOrNull().also { probe = it }
+        val attached = effects.equalizer
+        // Nothing playing yet: briefly open an equalizer just to learn the
+        // device's band layout, then let it go again.
+        val probe = if (attached == null) {
+            runCatching { Equalizer(0, 0) }.getOrNull()
+        } else {
+            null
+        }
+        val eq = attached ?: probe
 
         if (eq != null) {
             runCatching {
@@ -92,8 +101,10 @@ class EqualizerActivity : AppCompatActivity() {
                 for (band in 0 until bandCount) frequencies.add(eq.getCenterFreq(band.toShort()))
             }
         }
+        probe?.let { runCatching { it.release() } }
 
         if (bandCount <= 0) {
+            eqAvailable = eq != null
             bandCount = 5
             bandMin = -1500
             bandMax = 1500
@@ -101,6 +112,7 @@ class EqualizerActivity : AppCompatActivity() {
             frequencies.clear()
             frequencies.addAll(listOf(60000, 230000, 910000, 3600000, 14000000))
         }
+        binding.eqUnavailable.visibility = if (eqAvailable) View.GONE else View.VISIBLE
     }
 
     private fun buildBands() {
@@ -116,6 +128,7 @@ class EqualizerActivity : AppCompatActivity() {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(44)
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -126,7 +139,8 @@ class EqualizerActivity : AppCompatActivity() {
                 text = formatFrequency(frequencies.getOrElse(band) { 0 })
                 layoutParams = LinearLayout.LayoutParams(dp(52), ViewGroup.LayoutParams.WRAP_CONTENT)
                 setTextColor(ContextCompat.getColor(this@EqualizerActivity, R.color.text_secondary))
-                textSize = 11f
+                textSize = 12f
+                typeface = android.graphics.Typeface.create("sans-serif-condensed", android.graphics.Typeface.BOLD)
             }
 
             val seek = SeekBar(this).apply {
@@ -137,13 +151,14 @@ class EqualizerActivity : AppCompatActivity() {
                 progressTintList = accent
                 thumbTintList = accent
                 progressBackgroundTintList = track
+                contentDescription = freqLabel.text
             }
 
             val valueLabel = TextView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(52), ViewGroup.LayoutParams.WRAP_CONTENT)
+                layoutParams = LinearLayout.LayoutParams(dp(56), ViewGroup.LayoutParams.WRAP_CONTENT)
                 gravity = Gravity.END
                 setTextColor(ContextCompat.getColor(this@EqualizerActivity, R.color.text_primary))
-                textSize = 11f
+                textSize = 12f
             }
 
             val bandIndex = band
@@ -153,7 +168,7 @@ class EqualizerActivity : AppCompatActivity() {
                     val level = bandMin + progress
                     effects.setBandLevel(bandIndex, level)
                     valueLabel.text = formatDecibel(level)
-                    binding.presetDropdown.setText("", false)
+                    clearPresetSelection()
                 }
 
                 override fun onStartTrackingTouch(bar: SeekBar) = Unit
@@ -188,7 +203,48 @@ class EqualizerActivity : AppCompatActivity() {
 
     // --- presets ------------------------------------------------------------
 
-    private fun buildPresets() {
+    private fun buildRockPresets() {
+        val names = mapOf(
+            RockPresets.FLAT to R.string.preset_flat,
+            RockPresets.METAL to R.string.preset_metal,
+            RockPresets.ROCK to R.string.preset_rock,
+            RockPresets.DJENT to R.string.preset_djent,
+            RockPresets.DOOM to R.string.preset_doom,
+            RockPresets.VOCAL to R.string.preset_vocal
+        )
+        val accent = ThemeHelper.accentColor(this)
+        val surface = ContextCompat.getColor(this, R.color.surface_2)
+        val chipBg = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(accent, surface)
+        )
+        RockPresets.ALL.forEach { preset ->
+            val chip = Chip(this).apply {
+                id = View.generateViewId()
+                setText(names.getValue(preset))
+                isCheckable = true
+                isCheckedIconVisible = false
+                chipBackgroundColor = chipBg
+                chipStrokeWidth = 0f
+                tag = preset
+                setOnCheckedChangeListener { button, checked ->
+                    if (!checked || updatingChips) return@setOnCheckedChangeListener
+                    applyRockPreset(button.tag as RockPresets.Preset)
+                }
+            }
+            binding.rockPresets.addView(chip)
+        }
+    }
+
+    private fun applyRockPreset(preset: RockPresets.Preset) {
+        val levels = RockPresets.levelsFor(preset, frequencies, bandMin, bandMax)
+        effects.setCustomCurve(levels)
+        if (!binding.eqSwitch.isChecked) binding.eqSwitch.isChecked = true
+        refreshBandRows()
+        if (presetNames.isNotEmpty()) binding.presetDropdown.setText("", false)
+    }
+
+    private fun buildDevicePresets() {
         if (presetNames.isEmpty()) {
             binding.presetLayout.visibility = View.GONE
             return
@@ -204,7 +260,19 @@ class EqualizerActivity : AppCompatActivity() {
         binding.presetDropdown.setOnItemClickListener { _, _, position, _ ->
             effects.selectPreset(position)
             refreshBandRows()
+            clearChips()
         }
+    }
+
+    private fun clearChips() {
+        updatingChips = true
+        binding.rockPresets.clearCheck()
+        updatingChips = false
+    }
+
+    private fun clearPresetSelection() {
+        clearChips()
+        if (presetNames.isNotEmpty()) binding.presetDropdown.setText("", false)
     }
 
     // --- boost / bass / virtualizer ----------------------------------------
@@ -246,25 +314,27 @@ class EqualizerActivity : AppCompatActivity() {
         }
 
     private fun updateBassLabel(progress: Int) {
-        binding.bassLabel.text = "${getString(R.string.bass_boost)}  ·  ${progress}%"
+        binding.bassLabel.text = getString(R.string.effect_label, getString(R.string.bass_boost), progress)
     }
 
     private fun updateVirtLabel(progress: Int) {
-        binding.virtLabel.text = "${getString(R.string.virtualizer)}  ·  ${progress}%"
+        binding.virtLabel.text = getString(R.string.effect_label, getString(R.string.virtualizer), progress)
     }
 
     private fun updateBoostLabel(progress: Int) {
         binding.boostLabel.text =
-            "${getString(R.string.volume_boost)}  ·  ${100 + progress}%"
+            getString(R.string.effect_label, getString(R.string.volume_boost), 100 + progress)
     }
 
     private fun updateEnabledState() {
-        val enabled = binding.eqSwitch.isChecked
+        val enabled = binding.eqSwitch.isChecked && eqAvailable
         binding.bandContainer.alpha = if (enabled) 1f else 0.35f
         binding.presetLayout.alpha = if (enabled) 1f else 0.35f
         binding.resetButton.isEnabled = enabled
         for (seek in bandSeekBars) seek.isEnabled = enabled
-        binding.eqDisabledHint.visibility = if (enabled) View.GONE else View.VISIBLE
+        binding.eqDisabledHint.visibility =
+            if (binding.eqSwitch.isChecked || !eqAvailable) View.GONE else View.VISIBLE
+        binding.eqSwitch.isEnabled = eqAvailable
     }
 
     // --- formatting helpers -------------------------------------------------
@@ -281,5 +351,5 @@ class EqualizerActivity : AppCompatActivity() {
     }
 
     private fun formatDecibel(millibel: Int): String =
-        String.format(Locale.US, "%+.1f", millibel / 100.0)
+        String.format(Locale.US, "%+.1f dB", millibel / 100.0)
 }

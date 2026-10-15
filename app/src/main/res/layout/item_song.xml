@@ -5,58 +5,94 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:minHeight="68dp"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="8dp">
+    android:paddingStart="12dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="8dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/songArt"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_music_note"
+        android:src="@drawable/placeholder_art"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.Art" />
 
+    <!-- Track number, shown instead of artwork inside an album. -->
+    <TextView
+        android:id="@+id/trackNumber"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:textColor="@color/text_muted"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/songArt"
+        app:layout_constraintEnd_toEndOf="@id/songArt"
+        app:layout_constraintStart_toStartOf="@id/songArt"
+        app:layout_constraintTop_toTopOf="@id/songArt" />
+
+    <ImageView
+        android:id="@+id/playingIndicator"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="@string/now_playing"
+        android:src="@drawable/ic_graphic_eq"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/songArt"
+        app:layout_constraintEnd_toEndOf="@id/songArt"
+        app:layout_constraintStart_toStartOf="@id/songArt"
+        app:layout_constraintTop_toTopOf="@id/songArt"
+        app:tint="@color/white" />
+
     <TextView
         android:id="@+id/songTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="14dp"
         android:ellipsize="end"
+        android:fontFamily="sans-serif-condensed"
         android:maxLines="1"
         android:textColor="@color/text_primary"
-        android:textSize="15sp"
+        android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/songMenu"
+        app:layout_constraintBottom_toTopOf="@id/songSubtitle"
+        app:layout_constraintEnd_toStartOf="@id/songDuration"
         app:layout_constraintStart_toEndOf="@id/songArt"
-        app:layout_constraintTop_toTopOf="@id/songArt" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/songSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="2dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/songArt"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/songDuration"
-        app:layout_constraintStart_toEndOf="@id/songArt" />
+        app:layout_constraintStart_toEndOf="@id/songArt"
+        app:layout_constraintTop_toBottomOf="@id/songTitle" />
 
     <TextView
         android:id="@+id/songDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="4dp"
         android:textColor="@color/text_muted"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/songArt"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/songMenu"
-        app:layout_constraintTop_toTopOf="@id/songArt" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/songMenu"

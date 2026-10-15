@@ -36,6 +36,10 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     signingConfigs {
         if (releaseStoreFile != null) {
             create("release") {
@@ -51,7 +55,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            // Without a release key, fall back to the debug key so the APK is
+            // still installable (but see the README about updates).
             signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

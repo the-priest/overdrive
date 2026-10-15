@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.overdrive.player.data.Album
+import com.overdrive.player.R
 import com.overdrive.player.databinding.FragmentSongListBinding
 
 class AlbumsFragment : Fragment() {
@@ -28,21 +28,23 @@ class AlbumsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = requireActivity() as MainActivity
-        adapter = AlbumAdapter { album -> activity.openCollection(CollectionActivity.TYPE_ALBUM, album.id, album.name) }
-        binding.recycler.layoutManager = GridLayoutManager(requireContext(), 2)
+        adapter = AlbumAdapter { album ->
+            SongMenu.openAlbum(requireContext(), album.key, album.title, album.id)
+        }
+        // Two columns on phones, more on wide screens / landscape.
+        val columns = (resources.configuration.screenWidthDp / 180).coerceIn(2, 6)
+        binding.recycler.layoutManager = GridLayoutManager(requireContext(), columns)
+        binding.recycler.setPadding(6, binding.recycler.paddingTop, 6, binding.recycler.paddingBottom)
         binding.recycler.adapter = adapter
-        binding.emptyText.text = "No albums found."
+        binding.emptyText.setText(R.string.empty_albums)
+        binding.emptyIcon.setImageResource(R.drawable.ic_album)
         binding.emptyAction.visibility = View.GONE
 
-        viewModel.albums.observe(viewLifecycleOwner) { list ->
+        viewModel.visibleAlbums.observe(viewLifecycleOwner) { list ->
             adapter.submitList(list)
-            updateEmptyState(list)
+            binding.emptyView.visibility =
+                if (list.isEmpty() && viewModel.loading.value != true) View.VISIBLE else View.GONE
         }
-    }
-
-    private fun updateEmptyState(list: List<Album>) {
-        binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

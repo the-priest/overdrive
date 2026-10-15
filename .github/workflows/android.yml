@@ -10,13 +10,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
+    env:
+      # Optional: add these repository secrets to sign Overdrive.apk with your
+      # own key (see README). Without them the debug key is used.
+      OVERDRIVE_STORE_PASSWORD: ${{ secrets.OVERDRIVE_STORE_PASSWORD }}
+      OVERDRIVE_KEY_ALIAS: ${{ secrets.OVERDRIVE_KEY_ALIAS }}
+      OVERDRIVE_KEY_PASSWORD: ${{ secrets.OVERDRIVE_KEY_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -30,6 +42,18 @@ jobs:
           yes | "$SDKM" --licenses > /dev/null || true
           "$SDKM" --install "platforms;android-37.2" "build-tools;37.0.0" > /dev/null \
             || { echo "Available platforms:"; "$SDKM" --list | grep -E 'platforms;android-3[5-9]'; exit 1; }
+
+      - name: Decode release keystore (optional)
+        env:
+          KEYSTORE_B64: ${{ secrets.OVERDRIVE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "OVERDRIVE_STORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+            echo "Release keystore found: signing with it."
+          else
+            echo "No OVERDRIVE_KEYSTORE_BASE64 secret: release APK is signed with the debug key."
+          fi
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
@@ -63,10 +87,30 @@ jobs:
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
-      - name: Upload lint report
+      - name: Upload test and lint reports
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: lint-report
-          path: app/build/reports/lint-results-debug.html
+          name: reports
+          path: |
+            app/build/reports/lint-results-debug.html
+            app/build/reports/tests/
           if-no-files-found: ignore
+
+      - name: Commit Overdrive.apk to the repository
+        if: github.event_name == 'push'
+        run: |
+          cp app/build/outputs/apk/release/*.apk Overdrive.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Overdrive.apk
+          if git diff --cached --quiet; then
+            echo "APK unchanged."
+            exit 0
+          fi
+          git commit -m "Build Overdrive.apk from ${GITHUB_SHA::7} [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep 5
+          done
+          exit 1

@@ -46,6 +46,38 @@
                 android:textColor="@color/text_muted"
                 android:textSize="12sp" />
 
+            <TextView
+                android:id="@+id/eqUnavailable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/eq_unavailable"
+                android:textColor="@color/rock_amber"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                style="@style/TextAppearance.Overdrive.Overline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/rock_presets" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/rockPresets"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:selectionRequired="false"
+                    app:singleLine="true"
+                    app:singleSelection="true" />
+            </HorizontalScrollView>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/presetLayout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"

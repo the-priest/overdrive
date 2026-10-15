@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="12dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/headerArt"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="@null"
+        android:elevation="14dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder_art"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Overdrive.ArtLarge" />
+
+    <TextView
+        android:id="@+id/headerOverline"
+        style="@style/TextAppearance.Overdrive.Overline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp" />
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/text_primary"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/headerSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/playButton"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-condensed"
+            android:letterSpacing="0.1"
+            android:text="@string/play_all"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_play" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shuffleButton"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-condensed"
+            android:letterSpacing="0.1"
+            android:text="@string/shuffle"
+            android:textAllCaps="true"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_shuffle"
+            app:iconTint="?attr/colorPrimary"
+            app:strokeColor="@color/steel_edge" />
+    </LinearLayout>
+</LinearLayout>

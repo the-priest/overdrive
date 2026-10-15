@@ -11,6 +11,8 @@
     <string name="menu_equalizer">Equalizer &amp; Boost</string>
     <string name="menu_shuffle_all">Shuffle all</string>
     <string name="menu_sort">Sort</string>
+    <string name="menu_queue">Up next</string>
+    <string name="menu_sleep_timer">Sleep timer</string>
 
     <string name="now_playing">Now Playing</string>
     <string name="settings">Settings</string>
@@ -20,11 +22,17 @@
     <string name="unknown_artist">Unknown artist</string>
     <string name="unknown_album">Unknown album</string>
     <string name="empty_songs">No music found.\nTap to grant access or rescan.</string>
-    <string name="empty_favorites">No favorites yet.\nLong-press a song to add one.</string>
+    <string name="empty_search">Nothing matches that search.</string>
+    <string name="empty_albums">No albums found.</string>
+    <string name="empty_artists">No artists found.</string>
+    <string name="empty_favorites">No favorites yet.\nTap the heart on any track to add it.</string>
     <string name="loading">Scanning your library…</string>
-    <string name="permission_needed">Access to your audio files is needed to find and play music.</string>
+    <string name="permission_needed">Overdrive needs access to your audio files to find and play your music.</string>
+    <string name="permission_denied_forever">Audio access is blocked. Enable it in the app settings to see your music.</string>
     <string name="grant_access">Grant access</string>
+    <string name="open_app_settings">Open settings</string>
     <string name="rescan">Rescan library</string>
+    <string name="rescanning">Rescanning your library…</string>
 
     <string name="play">Play</string>
     <string name="pause">Pause</string>
@@ -35,21 +43,61 @@
     <string name="favorite">Favorite</string>
     <string name="add_favorite">Add to favorites</string>
     <string name="remove_favorite">Remove from favorites</string>
+    <string name="added_favorite">Added to favorites</string>
+    <string name="removed_favorite">Removed from favorites</string>
     <string name="play_this">Play now</string>
-    <string name="search_hint">Search your library</string>
+    <string name="search_hint">Songs, artists, albums…</string>
+    <string name="seek_back">Back 10 seconds</string>
+    <string name="seek_forward">Forward 10 seconds</string>
 
     <string name="play_next">Play next</string>
     <string name="add_to_queue">Add to queue</string>
     <string name="go_to_artist">Go to artist</string>
     <string name="go_to_album">Go to album</string>
-    <string name="details">Details</string>
+    <string name="details">More options</string>
+    <string name="queued_next">Playing next</string>
+    <string name="queued_end">Added to queue</string>
+    <string name="play_all">Play</string>
+    <string name="song_count_label">%1$s · %2$s</string>
+
+    <!-- Sort -->
+    <string name="sort_title">Title</string>
+    <string name="sort_artist">Artist</string>
+    <string name="sort_album">Album</string>
+    <string name="sort_recent">Recently added</string>
+    <string name="sort_duration">Longest first</string>
+
+    <!-- Queue -->
+    <string name="queue_title">Up Next</string>
+    <string name="queue_now_playing">Now playing</string>
+    <string name="queue_up_next">Up next</string>
+    <string name="queue_up_next_shuffled">Up next · shuffled</string>
+    <string name="queue_empty">Nothing else queued.\nAdd songs with “Play next” or “Add to queue”.</string>
+    <string name="queue_end_of_queue">End of queue</string>
+    <string name="queue_clear">Clear upcoming</string>
+    <string name="queue_removed">Removed from queue</string>
+    <string name="queue_reorder_hint">Turn off shuffle to reorder by dragging</string>
+    <string name="undo">Undo</string>
+    <string name="up_next_label">Up next</string>
+
+    <!-- Sleep timer -->
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_off">Off</string>
+    <string name="sleep_end_of_track">End of current track</string>
+    <string name="sleep_minutes">%d minutes</string>
+    <string name="sleep_hour">1 hour</string>
+    <string name="sleep_set">Music stops in %s</string>
+    <string name="sleep_set_end_of_track">Music stops after this track</string>
+    <string name="sleep_cancelled">Sleep timer off</string>
 
     <!-- Settings -->
     <string name="playback_section">Playback</string>
     <string name="pause_on_disconnect">Pause when headphones unplugged</string>
     <string name="pause_on_disconnect_desc">Stop playback when the headset is disconnected</string>
     <string name="shuffle_default">Start in shuffle mode</string>
-    <string name="shuffle_default_desc">Shuffle the queue whenever playback starts fresh</string>
+    <string name="shuffle_default_desc">Shuffle is switched on every time the app starts</string>
+    <string name="resume_session">Resume where I left off</string>
+    <string name="resume_session_desc">Reload your last queue and position on launch</string>
     <string name="min_length">Hide short clips</string>
     <string name="min_length_desc">Skip tracks shorter than the selected length</string>
     <string name="appearance_section">Appearance</string>
@@ -57,22 +105,42 @@
     <string name="accent_red">Blood Red</string>
     <string name="accent_amber">Amped Amber</string>
     <string name="accent_blue">Steel Blue</string>
+    <string name="accent_toxic">Toxic Green</string>
     <string name="sound_section">Sound</string>
     <string name="open_equalizer">Equalizer, bass &amp; volume boost</string>
+    <string name="library_section">Library</string>
     <string name="about_section">About</string>
     <string name="about_text">Overdrive — a bare-knuckle music player. No ads. No subscriptions. Just your music, loud.</string>
-    <string name="version">Version</string>
+    <string name="version">Version %s</string>
+    <string name="off">Off</string>
 
     <!-- Equalizer -->
     <string name="enable_equalizer">Enable equalizer</string>
-    <string name="preset">Preset</string>
+    <string name="preset">Device preset</string>
+    <string name="rock_presets">Overdrive presets</string>
+    <string name="preset_flat">Flat</string>
+    <string name="preset_metal">Metal</string>
+    <string name="preset_rock">Rock</string>
+    <string name="preset_djent">Djent</string>
+    <string name="preset_doom">Doom</string>
+    <string name="preset_vocal">Vocals up</string>
     <string name="eq_disabled_hint">Equalizer is off. Turn it on to shape your sound.</string>
+    <string name="eq_unavailable">This device doesn\'t offer an equalizer for apps.</string>
     <string name="bass_boost">Bass boost</string>
     <string name="virtualizer">3D / Virtualizer</string>
     <string name="boost_warning" formatted="false">Warning: pushing past 150% can distort on weaker speakers. Crank responsibly.</string>
     <string name="reset">Reset</string>
-    <string name="boost_off">Boost off</string>
-    <string name="boost_on">Boost on</string>
+    <string name="boost_off">Volume boost off</string>
+    <string name="boost_on">Volume boost %d%%</string>
+    <string name="effect_label">%1$s · %2$d%%</string>
+
+    <!-- Now playing tools -->
+    <string name="tool_boost">Boost</string>
+    <string name="tool_eq">EQ</string>
+    <string name="tool_sleep">Sleep</string>
+    <string name="tool_queue">Queue</string>
+    <string name="zero_time" translatable="false">0:00</string>
+    <string name="more_in_queue">+%d more</string>
 
     <string name="notif_channel_name">Playback</string>
     <string name="notif_channel_desc">Music playback controls</string>

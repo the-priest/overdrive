@@ -1,10 +1,10 @@
 package com.overdrive.player.audio
 
-import android.content.Context
 import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.Virtualizer
+import android.util.Log
 import com.overdrive.player.prefs.SettingsStore
 
 /**
@@ -14,10 +14,7 @@ import com.overdrive.player.prefs.SettingsStore
  * to Overdrive's own output and never touch other apps. The volume boost is a
  * [LoudnessEnhancer] mapped from 0 to +20 dB at the 200% setting.
  */
-class AudioEffectsManager(
-    context: Context,
-    private val prefs: SettingsStore
-) {
+class AudioEffectsManager(private val prefs: SettingsStore) {
 
     @Volatile
     private var sessionId: Int = 0
@@ -32,6 +29,13 @@ class AudioEffectsManager(
     /** True once the effects are bound to a real audio session. */
     val isAttached: Boolean get() = equalizer != null
 
+    /** Whether the device supports a bass boost strength other than on/off. */
+    val bassBoostSupported: Boolean
+        get() = bassBoost?.strengthSupported ?: true
+
+    val virtualizerSupported: Boolean
+        get() = virtualizer?.strengthSupported ?: true
+
     @Synchronized
     fun attach(newSessionId: Int) {
         if (newSessionId <= 0) return
@@ -39,16 +43,24 @@ class AudioEffectsManager(
         releaseInternal()
 
         sessionId = newSessionId
-        equalizer = runCatching { Equalizer(0, newSessionId) }.getOrNull()
-        bassBoost = runCatching { BassBoost(0, newSessionId) }.getOrNull()
-        virtualizer = runCatching { Virtualizer(0, newSessionId) }.getOrNull()
-        loudness = runCatching { LoudnessEnhancer(newSessionId) }.getOrNull()
+        equalizer = create("Equalizer") { Equalizer(0, newSessionId) }
+        bassBoost = create("BassBoost") { BassBoost(0, newSessionId) }
+        virtualizer = create("Virtualizer") { Virtualizer(0, newSessionId) }
+        loudness = create("LoudnessEnhancer") { LoudnessEnhancer(newSessionId) }
 
         applyEqualizer()
         applyBassBoost()
         applyVirtualizer()
         applyVolumeBoost()
     }
+
+    private inline fun <T> create(name: String, block: () -> T): T? =
+        try {
+            block()
+        } catch (e: Exception) {
+            Log.w(TAG, "$name not available on this device", e)
+            null
+        }
 
     @Synchronized
     fun release() {
@@ -79,21 +91,37 @@ class AudioEffectsManager(
     fun selectPreset(index: Int) {
         prefs.eqPreset = index
         applyEqualizer()
+        // Remember the preset's curve so tweaking one band later keeps the rest.
+        equalizer?.let { eq -> runCatching { prefs.setBandLevels(readBands(eq)) } }
     }
 
     @Synchronized
     fun setBandLevel(band: Int, level: Int) {
-        prefs.eqPreset = -1
+        if (prefs.eqPreset >= 0) {
+            // Leaving a preset: start the custom curve from the preset's shape
+            // instead of silently resetting every other band to flat.
+            equalizer?.let { eq -> runCatching { prefs.setBandLevels(readBands(eq)) } }
+            prefs.eqPreset = -1
+        }
         prefs.setBandLevel(band, level)
         runCatching { equalizer?.setBandLevel(band.toShort(), level.toShort()) }
     }
 
+    /** Applies a whole custom curve, e.g. one of the built-in rock presets. */
     @Synchronized
-    fun resetEqualizer(bandCount: Int) {
+    fun setCustomCurve(levels: IntArray) {
         prefs.eqPreset = -1
-        for (band in 0 until bandCount) prefs.setBandLevel(band, 0)
+        prefs.setBandLevels(levels)
         applyEqualizer()
     }
+
+    @Synchronized
+    fun resetEqualizer(bandCount: Int) {
+        setCustomCurve(IntArray(bandCount))
+    }
+
+    private fun readBands(eq: Equalizer): IntArray =
+        IntArray(eq.numberOfBands.toInt()) { eq.getBandLevel(it.toShort()).toInt() }
 
     @Synchronized
     fun applyEqualizer() {
@@ -104,11 +132,13 @@ class AudioEffectsManager(
             if (preset in 0 until eq.numberOfPresets.toInt()) {
                 eq.usePreset(preset.toShort())
             } else {
+                val range = eq.bandLevelRange
                 for (band in 0 until eq.numberOfBands.toInt()) {
-                    eq.setBandLevel(band.toShort(), prefs.bandLevel(band).toShort())
+                    val level = prefs.bandLevel(band).coerceIn(range[0].toInt(), range[1].toInt())
+                    eq.setBandLevel(band.toShort(), level.toShort())
                 }
             }
-        }
+        }.onFailure { Log.w(TAG, "Could not apply equalizer", it) }
     }
 
     // --- Bass boost / virtualizer ------------------------------------------
@@ -151,16 +181,24 @@ class AudioEffectsManager(
         applyVolumeBoost()
     }
 
+    /** Quick toggle: off, or back to the last level the user picked. */
+    @Synchronized
+    fun toggleVolumeBoost() {
+        setVolumeBoost(if (prefs.volumeBoost > 100) 100 else prefs.lastActiveBoost)
+    }
+
     @Synchronized
     fun applyVolumeBoost() {
         val le = loudness ?: return
         runCatching {
-            le.enabled = prefs.volumeBoost > 100
             le.setTargetGain(volumeBoostToMillibel(prefs.volumeBoost))
+            le.enabled = prefs.volumeBoost > 100
         }
     }
 
     companion object {
+        private const val TAG = "AudioEffects"
+
         /**
          * Maps 100%..200% onto 0..2000 millibel, i.e. up to +20 dB of gain.
          * That is roughly four times the perceived loudness at the top end.

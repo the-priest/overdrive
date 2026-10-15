@@ -10,23 +10,29 @@
         app:showAsAction="always|collapseActionView" />
 
     <item
+        android:id="@+id/action_equalizer"
+        android:icon="@drawable/ic_equalizer"
+        android:title="@string/menu_equalizer"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_shuffle_all"
         android:title="@string/menu_shuffle_all"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_equalizer"
-        android:title="@string/menu_equalizer"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/menu_settings"
+        android:id="@+id/action_queue"
+        android:title="@string/menu_queue"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_rescan"
         android:title="@string/rescan"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/menu_settings"
         app:showAsAction="never" />
 
 </menu>

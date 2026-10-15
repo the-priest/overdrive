@@ -8,24 +8,40 @@
         <item name="colorOnPrimaryContainer">@color/white</item>
         <item name="colorSecondary">@color/rock_amber</item>
         <item name="colorOnSecondary">@color/black</item>
-        <item name="colorSecondaryContainer">@color/rock_amber_dark</item>
-        <item name="colorOnSecondaryContainer">@color/white</item>
+        <item name="colorSecondaryContainer">@color/surface_3</item>
+        <item name="colorOnSecondaryContainer">@color/text_primary</item>
 
         <item name="android:colorBackground">@color/bg</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorSurfaceVariant">@color/surface_2</item>
         <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorSurfaceContainerLow">@color/surface</item>
+        <item name="colorSurfaceContainer">@color/surface_2</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_2</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_3</item>
         <item name="colorOutline">@color/divider</item>
         <item name="colorOutlineVariant">@color/surface_3</item>
         <item name="colorError">@color/rock_red</item>
 
         <item name="android:windowBackground">@drawable/bg_app</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/bg</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Overdrive.Dialog</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Overdrive.BottomSheet</item>
+    </style>
+
+    <!-- Slides up from the bottom like a sheet over the library. -->
+    <style name="ThemeOverlay.Overdrive.NowPlaying" parent="">
+        <item name="android:windowAnimationStyle">@style/Animation.Overdrive.SlideUp</item>
+    </style>
+
+    <style name="Animation.Overdrive.SlideUp" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_up</item>
+        <item name="android:activityOpenExitAnimation">@anim/hold</item>
+        <item name="android:activityCloseEnterAnimation">@anim/hold</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_down</item>
     </style>
 
     <style name="Theme.Overdrive.Amber" parent="Theme.Overdrive">
@@ -42,9 +58,25 @@
         <item name="colorSecondary">@color/rock_red</item>
     </style>
 
+    <style name="Theme.Overdrive.Toxic" parent="Theme.Overdrive">
+        <item name="colorPrimary">@color/rock_toxic</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/rock_toxic_dark</item>
+        <item name="colorSecondary">@color/rock_red</item>
+    </style>
+
     <style name="ThemeOverlay.Overdrive.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorSurface">@color/surface_2</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_2</item>
         <item name="colorOnSurface">@color/text_primary</item>
+    </style>
+
+    <style name="ThemeOverlay.Overdrive.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Overdrive.BottomSheet</item>
+    </style>
+
+    <style name="Widget.Overdrive.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/surface_2</item>
     </style>
 
     <!-- Text styles -->
@@ -70,14 +102,50 @@
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
+    <style name="TextAppearance.Overdrive.Logo" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:letterSpacing">0.14</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.Overdrive.Tab" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.Overdrive.Overline" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.18</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="ShapeAppearance.Overdrive.Art" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item>
     </style>
 
+    <style name="ShapeAppearance.Overdrive.ArtLarge" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
     <style name="ShapeAppearance.Overdrive.ArtCircle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.Overdrive.Chip" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">@color/surface_2</item>
+        <item name="chipStrokeColor">@color/steel_edge</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="chipIconTint">?attr/colorPrimary</item>
     </style>
 
     <style name="SectionHeader" parent="">
@@ -89,6 +157,45 @@
         <item name="android:letterSpacing">0.12</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SettingsDescription" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">@color/text_muted</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="NowPlayingTool" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingVertical">6dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="NowPlayingToolIcon" parent="">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:contentDescription">@null</item>
+        <item name="tint">@color/text_secondary</item>
+    </style>
+
+    <style name="NowPlayingToolLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 

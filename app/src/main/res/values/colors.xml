@@ -3,24 +3,31 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="bg">#FF0A0A0C</color>
-    <color name="bg_grad_top">#FF1A0A0C</color>
-    <color name="surface">#FF151519</color>
-    <color name="surface_2">#FF1E1E24</color>
-    <color name="surface_3">#FF282830</color>
-    <color name="divider">#FF2C2C34</color>
+    <!-- Gunmetal backdrop -->
+    <color name="bg">#FF08080A</color>
+    <color name="bg_grad_top">#FF170A0D</color>
+    <color name="surface">#FF121216</color>
+    <color name="surface_2">#FF1A1A20</color>
+    <color name="surface_3">#FF26262E</color>
+    <color name="surface_glass">#CC141418</color>
+    <color name="divider">#FF24242B</color>
+    <color name="steel_edge">#33FFFFFF</color>
 
-    <color name="text_primary">#FFF3F3F5</color>
-    <color name="text_secondary">#FF9C9CA8</color>
-    <color name="text_muted">#FF6A6A74</color>
+    <color name="text_primary">#FFF4F4F6</color>
+    <color name="text_secondary">#FFA0A0AC</color>
+    <color name="text_muted">#FF6C6C78</color>
 
+    <!-- Accents -->
     <color name="rock_red">#FFE11D2A</color>
-    <color name="rock_red_dark">#FF8E0F17</color>
+    <color name="rock_red_dark">#FF7A0C14</color>
     <color name="rock_amber">#FFF5A623</color>
-    <color name="rock_amber_dark">#FFB4700A</color>
+    <color name="rock_amber_dark">#FF8F5806</color>
     <color name="rock_steel">#FF3D8BFF</color>
-    <color name="rock_steel_dark">#FF1D4FA8</color>
+    <color name="rock_steel_dark">#FF173F86</color>
+    <color name="rock_toxic">#FF8BF33A</color>
+    <color name="rock_toxic_dark">#FF3B7A10</color>
     <color name="rock_gold">#FFD4AF37</color>
 
     <color name="scrim">#B3000000</color>
+    <color name="swipe_delete">#FF5A0A10</color>
 </resources>

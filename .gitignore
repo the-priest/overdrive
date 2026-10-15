@@ -6,6 +6,7 @@
 .externalNativeBuild/
 .cxx/
 *.apk
+!/Overdrive.apk
 .kotlin/
 *.jks
 *.keystore

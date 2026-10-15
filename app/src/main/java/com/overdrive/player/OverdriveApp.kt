@@ -20,7 +20,7 @@ class OverdriveApp : Application() {
     override fun onCreate() {
         super.onCreate()
         prefs = SettingsStore(this)
-        audioEffects = AudioEffectsManager(this, prefs)
+        audioEffects = AudioEffectsManager(prefs)
     }
 
     companion object {

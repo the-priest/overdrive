@@ -39,6 +39,8 @@
                 android:textColor="@color/text_primary"
                 android:textSize="15sp" />
 
+            <TextView style="@style/SettingsDescription" android:text="@string/pause_on_disconnect_desc" />
+
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switchShuffleDefault"
                 android:layout_width="match_parent"
@@ -47,6 +49,23 @@
                 android:text="@string/shuffle_default"
                 android:textColor="@color/text_primary"
                 android:textSize="15sp" />
+
+            <TextView style="@style/SettingsDescription" android:text="@string/shuffle_default_desc" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchResume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:text="@string/resume_session"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+
+            <TextView style="@style/SettingsDescription" android:text="@string/resume_session_desc" />
+
+            <View style="@style/Divider" />
+
+            <TextView style="@style/SectionHeader" android:text="@string/library_section" />
 
             <LinearLayout
                 android:id="@+id/rowMinLength"
@@ -90,31 +109,35 @@
                 android:id="@+id/groupAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <RadioButton
                     android:id="@+id/accentRed"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/accent_red"
                     android:textColor="@color/rock_red" />
 
                 <RadioButton
                     android:id="@+id/accentAmber"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/accent_amber"
                     android:textColor="@color/rock_amber" />
 
                 <RadioButton
                     android:id="@+id/accentBlue"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/accent_blue"
                     android:textColor="@color/rock_steel" />
+
+                <RadioButton
+                    android:id="@+id/accentToxic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/accent_toxic"
+                    android:textColor="@color/rock_toxic" />
             </RadioGroup>
 
             <View style="@style/Divider" />

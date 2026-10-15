@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Overdrive"
-        tools:targetApi="34">
+        tools:targetApi="36">
 
         <activity
             android:name=".ui.MainActivity"
@@ -39,6 +39,10 @@
 
         <activity
             android:name=".ui.CollectionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.QueueActivity"
             android:exported="false" />
 
         <activity
