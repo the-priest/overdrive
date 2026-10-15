@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +30,7 @@ import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
+import com.overdrive.player.util.enableDarkEdgeToEdge
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         themeAccent = ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableDarkEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarPadding(top = true, bottom = true)
@@ -171,11 +171,13 @@ class MainActivity : AppCompatActivity() {
         item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 closeSearchCallback.isEnabled = true
+                binding.toolbar.menu.findItem(R.id.action_equalizer)?.isVisible = false
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                 closeSearchCallback.isEnabled = false
+                binding.toolbar.menu.findItem(R.id.action_equalizer)?.isVisible = true
                 viewModel.setQuery("")
                 return true
             }

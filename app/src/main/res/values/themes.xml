@@ -101,7 +101,8 @@
     <style name="TextAppearance.Overdrive.Tab" parent="TextAppearance.Material3.TitleSmall">
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0.06</item>
         <item name="android:textAllCaps">true</item>
     </style>
 

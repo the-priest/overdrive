@@ -10,7 +10,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -33,6 +32,7 @@ import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
+import com.overdrive.player.util.enableDarkEdgeToEdge
 import com.overdrive.player.util.formatDuration
 import com.overdrive.player.util.formatTotalDuration
 
@@ -71,7 +71,7 @@ class QueueActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableDarkEdgeToEdge()
         binding = ActivityQueueBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarPadding(top = true, bottom = true)

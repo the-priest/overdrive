@@ -28,6 +28,8 @@
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorHeight="3dp"
         app:tabMode="auto"
+        app:tabPaddingEnd="6dp"
+        app:tabPaddingStart="6dp"
         app:tabRippleColor="@color/surface_3"
         app:tabSelectedTextColor="@color/text_primary"
         app:tabTextAppearance="@style/TextAppearance.Overdrive.Tab"

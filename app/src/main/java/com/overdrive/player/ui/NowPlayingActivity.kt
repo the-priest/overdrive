@@ -14,7 +14,6 @@ import android.os.Looper
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.SeekBar
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -38,6 +37,7 @@ import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
+import com.overdrive.player.util.enableDarkEdgeToEdge
 import com.overdrive.player.util.formatDuration
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -110,7 +110,7 @@ class NowPlayingActivity : AppCompatActivity() {
         themeAccent = ThemeHelper.apply(this)
         theme.applyStyle(R.style.ThemeOverlay_Overdrive_NowPlaying, true)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableDarkEdgeToEdge()
         binding = ActivityNowPlayingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarPadding(top = true, bottom = true)
@@ -354,7 +354,7 @@ class NowPlayingActivity : AppCompatActivity() {
         val next = upcoming.firstOrNull()
         if (next == null) {
             binding.upNextLabel.setText(R.string.queue_end_of_queue)
-            binding.upNextTitle.text = getString(R.string.tool_queue)
+            binding.upNextTitle.setText(R.string.queue_nothing_next)
             binding.upNextCount.text = ""
             binding.upNextArt.setImageResource(R.drawable.placeholder_art)
             binding.upNextArt.tag = null

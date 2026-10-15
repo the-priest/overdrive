@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
@@ -24,6 +23,7 @@ import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
+import com.overdrive.player.util.enableDarkEdgeToEdge
 import com.overdrive.player.util.formatTotalDuration
 import kotlinx.coroutines.launch
 
@@ -52,7 +52,7 @@ class CollectionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableDarkEdgeToEdge()
         binding = ActivityCollectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarPadding(top = true, bottom = true)
@@ -133,7 +133,7 @@ class CollectionActivity : AppCompatActivity() {
 
             fun bind() {
                 val context = b.root.context
-                b.headerOverline.setText(if (isAlbum) R.string.tab_albums else R.string.tab_artists)
+                b.headerOverline.setText(if (isAlbum) R.string.label_album else R.string.label_artist)
                 b.headerTitle.text = title
                 val count = context.resources.getQuantityString(R.plurals.songs, songs.size, songs.size)
                 val total = songs.sumOf { it.duration }

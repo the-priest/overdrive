@@ -3,6 +3,7 @@ package com.overdrive.player.util
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.activity.enableEdgeToEdge
 import androidx.core.view.updatePadding
 
 /**
@@ -28,4 +29,17 @@ fun View.applySystemBarPadding(top: Boolean = false, bottom: Boolean = false) {
         windowInsets
     }
     ViewCompat.requestApplyInsets(this)
+}
+
+/**
+ * Edge-to-edge with light system-bar icons. The app is always dark, so the
+ * default "follow the system theme" choice would draw dark icons on a dark
+ * background whenever the phone is in light mode.
+ */
+fun androidx.activity.ComponentActivity.enableDarkEdgeToEdge() {
+    val transparent = android.graphics.Color.TRANSPARENT
+    enableEdgeToEdge(
+        statusBarStyle = androidx.activity.SystemBarStyle.dark(transparent),
+        navigationBarStyle = androidx.activity.SystemBarStyle.dark(transparent)
+    )
 }

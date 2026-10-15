@@ -3,7 +3,6 @@ package com.overdrive.player.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.overdrive.player.BuildConfig
@@ -12,6 +11,7 @@ import com.overdrive.player.R
 import com.overdrive.player.databinding.ActivitySettingsBinding
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
+import com.overdrive.player.util.enableDarkEdgeToEdge
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -21,7 +21,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeHelper.apply(this)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableDarkEdgeToEdge()
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarPadding(top = true, bottom = true)

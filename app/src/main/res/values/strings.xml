@@ -5,6 +5,8 @@
     <string name="tab_albums">Albums</string>
     <string name="tab_artists">Artists</string>
     <string name="tab_favorites">Favorites</string>
+    <string name="label_album">Album</string>
+    <string name="label_artist">Artist</string>
 
     <string name="menu_search">Search</string>
     <string name="menu_settings">Settings</string>
@@ -96,6 +98,7 @@
     <string name="queue_up_next_shuffled">Up next · shuffled</string>
     <string name="queue_empty">Nothing else queued.\nAdd songs with “Play next” or “Add to queue”.</string>
     <string name="queue_end_of_queue">End of queue</string>
+    <string name="queue_nothing_next">Nothing after this one — open the queue</string>
     <string name="queue_clear">Clear upcoming</string>
     <string name="queue_removed">Removed from queue</string>
     <string name="queue_reorder_hint">Turn off shuffle to reorder by dragging</string>

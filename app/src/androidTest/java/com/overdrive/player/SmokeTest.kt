@@ -145,7 +145,7 @@ class SmokeTest {
             onView(allOf(withId(R.id.albumName), isDisplayed())).perform(click())
             onView(withId(R.id.headerTitle)).check(matches(isDisplayed()))
             Screenshots.take("09-album")
-            onView(withId(R.id.shuffleButton)).perform(click())
+            onView(allOf(withId(R.id.shuffleButton), isDisplayed())).perform(click())
             waitUntil("shuffle play") {
                 onMain { player().shuffleModeEnabled && player().isPlaying }
             }
