@@ -4,6 +4,12 @@ A no-nonsense, metal-styled music player for your local library. No ads, no
 accounts, no subscriptions. It scans your phone, plays your music loud, and
 gives you a proper equalizer with a volume booster up to 200%.
 
+<p align="center">
+  <img src="docs/screenshots/04-now-playing.jpg" width="230" alt="Now Playing">
+  <img src="docs/screenshots/05-up-next.jpg" width="230" alt="Up Next queue">
+  <img src="docs/screenshots/07-equalizer.jpg" width="230" alt="Equalizer">
+</p>
+
 ## Install
 
 **[⬇ Overdrive.apk](Overdrive.apk)** sits in the root of this repository. It's
@@ -44,7 +50,10 @@ Or over USB: `adb install -r Overdrive.apk`
   toggle it, long-press it to open the equalizer.
 
 **Library**
-- Songs, Albums, Artists and Favorites tabs.
+- Songs, Albums, Artists, Playlists and Favorites tabs.
+- **Playlists**: create, rename and delete them. Add a song, a whole album or the
+  current track with "Add to playlist…", or save the queue as a playlist.
+  Inside a playlist, long-press and drag to reorder, swipe to remove (with undo).
 - Sort songs by title, artist, album, recently added or length.
 - Search across songs, albums and artists. Each word has to match, so
   "metallica one" finds the right track.
@@ -58,6 +67,23 @@ Or over USB: `adb install -r Overdrive.apk`
 - Now Playing tints itself from the album art.
 - Accents: Blood Red, Amped Amber, Steel Blue, Toxic Green.
 - Draws edge-to-edge on modern Android.
+
+## Screenshots
+
+These come from the end-to-end test running on an emulator in CI (see below).
+The test tracks are generated tones, so they have no cover art.
+
+| Library | Search | Now Playing | Up Next |
+| --- | --- | --- | --- |
+| ![](docs/screenshots/03-library-playing.jpg) | ![](docs/screenshots/02-search.jpg) | ![](docs/screenshots/04-now-playing.jpg) | ![](docs/screenshots/05-up-next.jpg) |
+
+| Sleep timer | Equalizer | Albums | Album |
+| --- | --- | --- | --- |
+| ![](docs/screenshots/06-now-playing-sleep.jpg) | ![](docs/screenshots/07-equalizer.jpg) | ![](docs/screenshots/08-albums.jpg) | ![](docs/screenshots/09-album.jpg) |
+
+| Favorites | Playlists | Playlist |
+| --- | --- | --- |
+| ![](docs/screenshots/10-favorites.jpg) | ![](docs/screenshots/11-playlists.jpg) | ![](docs/screenshots/12-playlist.jpg) |
 
 ## Build from source
 
@@ -98,9 +124,19 @@ next one.
 
 ## CI
 
-GitHub Actions (`.github/workflows/android.yml`) runs the unit tests and lint,
-then builds the debug and R8-minified release APKs. It uploads both as build
-artifacts and commits the release APK as `Overdrive.apk`.
+GitHub Actions (`.github/workflows/android.yml`) has two jobs:
+
+- **build**: unit tests, lint, debug and R8-minified release APKs. It uploads
+  both APKs as build artifacts and commits the release APK as `Overdrive.apk`.
+- **ui-tests**: boots an Android 14 emulator and runs `SmokeTest`. The test
+  seeds a few generated tracks, plays them and walks every screen: search, Now
+  Playing, favorites, volume boost, Up Next (including jumping to a track),
+  sleep timer, equalizer presets, albums and playlists. It checks that the
+  equalizer and boost are actually attached to the playing audio, then commits
+  the screenshots to `docs/screenshots`.
+
+Run the end-to-end test yourself with a device or emulator connected:
+`./gradlew :app:connectedDebugAndroidTest`.
 
 ## Project layout
 
