@@ -55,6 +55,33 @@
     <string name="play_all">Play</string>
     <string name="song_count_label">%1$s · %2$s</string>
 
+    <!-- Playlists -->
+    <string name="tab_playlists">Playlists</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="add_to_playlist_ellipsis">Add to playlist…</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
+    <string name="playlist_new">New playlist</string>
+    <string name="playlist_new_ellipsis">+ New playlist…</string>
+    <string name="playlist_new_short">New</string>
+    <string name="playlist_create">Create</string>
+    <string name="playlist_rename">Rename</string>
+    <string name="playlist_save">Save</string>
+    <string name="playlist_delete">Delete</string>
+    <string name="playlist_delete_title">Delete “%s”?</string>
+    <string name="playlist_delete_message">The playlist is removed. Your music files are not touched.</string>
+    <string name="playlist_deleted">Playlist deleted</string>
+    <string name="playlist_name_hint">Playlist name</string>
+    <string name="playlist_default_name">Playlist %d</string>
+    <string name="playlist_created">Created “%s”</string>
+    <string name="playlist_already_added">Already in “%s”</string>
+    <string name="playlist_removed_song">Removed from playlist</string>
+    <string name="playlist_label">Playlist</string>
+    <string name="empty_playlists">No playlists yet.\nTap New, or use “Add to playlist” on any song.</string>
+    <string name="empty_playlist">This playlist is empty.\nAdd songs from your library with “Add to playlist”.</string>
+    <string name="save_queue_as_playlist">Save queue as playlist</string>
+    <string name="queue_playlist_name">Queue %s</string>
+    <string name="playlist_reorder_hint">Long-press a song to drag it, swipe to remove</string>
+
     <!-- Sort -->
     <string name="sort_title">Title</string>
     <string name="sort_artist">Artist</string>

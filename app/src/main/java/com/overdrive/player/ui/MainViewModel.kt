@@ -6,12 +6,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.overdrive.player.OverdriveApp
 import com.overdrive.player.data.Album
 import com.overdrive.player.data.Artist
 import com.overdrive.player.data.Library
 import com.overdrive.player.data.MusicRepository
+import com.overdrive.player.data.Playlist
+import com.overdrive.player.data.PlaylistOps
+import com.overdrive.player.data.PlaylistSummary
 import com.overdrive.player.data.Song
 import com.overdrive.player.data.SongSort
 import com.overdrive.player.prefs.SettingsStore
@@ -28,6 +32,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val allArtists = MutableLiveData<List<Artist>>(emptyList())
 
     val favorites = MutableLiveData<List<Song>>(emptyList())
+
+    /** User playlists resolved against the library, newest first. */
+    val playlists = MediatorLiveData<List<PlaylistSummary>>()
     val loading = MutableLiveData(false)
 
     /** Null until the permission has been checked at least once. */
@@ -65,7 +72,17 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         visibleAlbums.addSource(query) { recomputeAlbums() }
         visibleArtists.addSource(allArtists) { recomputeArtists() }
         visibleArtists.addSource(query) { recomputeArtists() }
+        val storeLive = OverdriveApp.from(app).playlists.playlists.asLiveData()
+        playlists.addSource(storeLive) { recomputePlaylists(it) }
+        playlists.addSource(allSongs) { recomputePlaylists(storeLive.value) }
         prefs.registerOnChange(prefsListener)
+    }
+
+    private fun recomputePlaylists(list: List<Playlist>?) {
+        val library = allSongs.value.orEmpty().associateBy { it.id }
+        playlists.value = list.orEmpty()
+            .sortedByDescending { it.createdAt }
+            .map { PlaylistOps.resolve(it, library) }
     }
 
     override fun onCleared() {

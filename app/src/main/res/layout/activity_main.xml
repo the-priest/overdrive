@@ -27,7 +27,7 @@
         app:tabIndicatorColor="?attr/colorPrimary"
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorHeight="3dp"
-        app:tabMode="fixed"
+        app:tabMode="auto"
         app:tabRippleColor="@color/surface_3"
         app:tabSelectedTextColor="@color/text_primary"
         app:tabTextAppearance="@style/TextAppearance.Overdrive.Tab"

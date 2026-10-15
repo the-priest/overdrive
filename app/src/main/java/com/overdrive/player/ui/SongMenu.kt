@@ -20,7 +20,8 @@ object SongMenu {
         song: Song,
         anchor: View,
         showAlbum: Boolean = true,
-        showArtist: Boolean = true
+        showArtist: Boolean = true,
+        onRemoveFromPlaylist: (() -> Unit)? = null
     ) {
         val prefs = OverdriveApp.from(activity).prefs
         val popup = PopupMenu(activity, anchor)
@@ -31,6 +32,7 @@ object SongMenu {
         )
         popup.menu.findItem(R.id.action_go_to_album).isVisible = showAlbum
         popup.menu.findItem(R.id.action_go_to_artist).isVisible = showArtist
+        popup.menu.findItem(R.id.action_remove_playlist).isVisible = onRemoveFromPlaylist != null
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_play -> Playback.start(activity, listOf(song), 0)
@@ -42,6 +44,9 @@ object SongMenu {
                     Playback.enqueue(activity, listOf(song))
                     toast(activity, R.string.queued_end)
                 }
+                R.id.action_add_playlist ->
+                    PlaylistDialogs.addToPlaylist(activity, listOf(song.id))
+                R.id.action_remove_playlist -> onRemoveFromPlaylist?.invoke()
                 R.id.action_favorite -> {
                     prefs.setFavorite(song.id, !favorite)
                     toast(activity, if (favorite) R.string.removed_favorite else R.string.added_favorite)

@@ -169,6 +169,8 @@ class NowPlayingActivity : AppCompatActivity() {
                 R.id.action_go_to_album -> openAlbum()
                 R.id.action_go_to_artist -> openArtist()
                 R.id.action_sleep_timer -> SleepTimerDialog.show(this)
+                R.id.action_add_playlist ->
+                    if (currentSongId >= 0) PlaylistDialogs.addToPlaylist(this, listOf(currentSongId))
                 else -> return@setOnMenuItemClickListener false
             }
             true

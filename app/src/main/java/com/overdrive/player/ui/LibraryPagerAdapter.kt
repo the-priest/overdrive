@@ -6,12 +6,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class LibraryPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
-    override fun getItemCount(): Int = 4
+    override fun getItemCount(): Int = 5
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> SongsFragment()
         1 -> AlbumsFragment()
         2 -> ArtistsFragment()
+        3 -> PlaylistsFragment()
         else -> FavoritesFragment()
     }
 }

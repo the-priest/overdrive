@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.overdrive.player.OverdriveApp
 import com.overdrive.player.R
 import com.overdrive.player.databinding.ActivityQueueBinding
 import com.overdrive.player.databinding.ItemQueueBinding
@@ -28,6 +29,7 @@ import com.overdrive.player.databinding.ItemQueueHeaderBinding
 import com.overdrive.player.player.Playback
 import com.overdrive.player.player.PlayerConnection
 import com.overdrive.player.player.audioUri
+import com.overdrive.player.player.songId
 import com.overdrive.player.util.ArtworkLoader
 import com.overdrive.player.util.ThemeHelper
 import com.overdrive.player.util.applySystemBarPadding
@@ -80,6 +82,7 @@ class QueueActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.action_shuffle -> c.shuffleModeEnabled = !c.shuffleModeEnabled
                 R.id.action_clear -> clearUpcoming(c)
+                R.id.action_save_playlist -> saveAsPlaylist(c)
                 else -> return@setOnMenuItemClickListener false
             }
             true
@@ -141,6 +144,16 @@ class QueueActivity : AppCompatActivity() {
         if (!scrolledToTop) {
             scrolledToTop = true
             binding.recycler.scrollToPosition(0)
+        }
+    }
+
+    private fun saveAsPlaylist(c: Player) {
+        val ids = (0 until c.mediaItemCount).map { c.getMediaItemAt(it).songId }.filter { it >= 0 }
+        if (ids.isEmpty()) return
+        val date = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(java.util.Date())
+        PlaylistDialogs.promptName(this, R.string.save_queue_as_playlist, getString(R.string.queue_playlist_name, date)) { name ->
+            OverdriveApp.from(this).playlists.create(name, ids)
+            Toast.makeText(this, getString(R.string.playlist_created, name), Toast.LENGTH_SHORT).show()
         }
     }
 

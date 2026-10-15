@@ -4,6 +4,11 @@
     <item android:id="@+id/action_play" android:title="@string/play_this" />
     <item android:id="@+id/action_play_next" android:title="@string/play_next" />
     <item android:id="@+id/action_add_queue" android:title="@string/add_to_queue" />
+    <item android:id="@+id/action_add_playlist" android:title="@string/add_to_playlist_ellipsis" />
+    <item
+        android:id="@+id/action_remove_playlist"
+        android:title="@string/remove_from_playlist"
+        android:visible="false" />
     <item android:id="@+id/action_favorite" android:title="@string/add_favorite" />
     <item android:id="@+id/action_go_to_album" android:title="@string/go_to_album" />
     <item android:id="@+id/action_go_to_artist" android:title="@string/go_to_artist" />

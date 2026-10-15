@@ -58,6 +58,18 @@ class CollectionActivity : AppCompatActivity() {
         binding.root.applySystemBarPadding(top = true, bottom = true)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.toolbar.inflateMenu(R.menu.menu_collection)
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            if (songs.isEmpty()) return@setOnMenuItemClickListener false
+            when (item.itemId) {
+                R.id.action_add_playlist ->
+                    PlaylistDialogs.addToPlaylist(this, songs.map { it.id }, suggestedName = title)
+                R.id.action_play_next -> Playback.playNext(this, songs)
+                R.id.action_add_queue -> Playback.enqueue(this, songs)
+                else -> return@setOnMenuItemClickListener false
+            }
+            true
+        }
 
         isAlbum = intent.getStringExtra(EXTRA_TYPE) != TYPE_ARTIST
         val key = intent.getStringExtra(EXTRA_KEY).orEmpty()

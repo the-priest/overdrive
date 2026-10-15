@@ -187,6 +187,7 @@ class MainActivity : AppCompatActivity() {
             R.string.tab_songs,
             R.string.tab_albums,
             R.string.tab_artists,
+            R.string.tab_playlists,
             R.string.tab_favorites
         )
         binding.pager.adapter = LibraryPagerAdapter(this)

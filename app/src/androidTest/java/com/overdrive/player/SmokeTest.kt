@@ -5,13 +5,15 @@ import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.Player
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
+import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -72,8 +74,8 @@ class SmokeTest {
 
             // Search narrows the list down.
             onView(withId(R.id.action_search)).perform(click())
-            onView(isAssignableFrom(EditText::class.java)).perform(typeText("riff"))
-            closeSoftKeyboard()
+            onView(isAssignableFrom(EditText::class.java))
+                .perform(typeText("riff"), pressImeActionButton())
             waitUntil("search results") { onMain { viewModel().visibleSongs.value?.size } == 1 }
             Screenshots.take("02-search")
             pressBack()
@@ -154,6 +156,30 @@ class SmokeTest {
             onView(allOf(withId(R.id.songTitle), withText(titles[0]), isDisplayed()))
                 .check(matches(isDisplayed()))
             Screenshots.take("10-favorites")
+
+            // --- Playlists --------------------------------------------------
+            onView(allOf(withId(R.id.songMenu), hasSibling(withText(titles[0])), isDisplayed()))
+                .perform(click())
+            onView(withText(R.string.add_to_playlist_ellipsis)).inRoot(isPlatformPopup()).perform(click())
+            onView(withText(R.string.playlist_new_ellipsis)).inRoot(isDialog()).perform(click())
+            onView(withText(R.string.playlist_create)).inRoot(isDialog()).perform(click())
+            val store = app.playlists
+            waitUntil("playlist to be created") { store.playlists.value.size == 1 }
+            val playlist = store.playlists.value.single()
+            assertEquals(1, playlist.songIds.size)
+            // Add the rest straight through the store, then check it renders.
+            val ids = onMain { viewModel().songs().filter { it.title in titles }.map { it.id } }
+            assertEquals(2, store.addSongs(playlist.id, ids))
+
+            onView(withText(R.string.tab_playlists)).perform(click())
+            onView(allOf(withId(R.id.playlistName), withText(playlist.name), isDisplayed()))
+                .check(matches(isDisplayed()))
+            Screenshots.take("11-playlists")
+            onView(allOf(withId(R.id.playlistName), withText(playlist.name), isDisplayed()))
+                .perform(click())
+            onView(withId(R.id.headerTitle)).check(matches(withText(playlist.name)))
+            Screenshots.take("12-playlist")
+            pressBack()
 
             onMain { player().pause() }
         }

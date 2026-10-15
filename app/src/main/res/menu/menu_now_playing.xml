@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_add_playlist"
+        android:title="@string/add_to_playlist_ellipsis"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_go_to_album"
         android:title="@string/go_to_album"
         app:showAsAction="never" />

@@ -14,4 +14,9 @@
         android:title="@string/queue_clear"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_save_playlist"
+        android:title="@string/save_queue_as_playlist"
+        app:showAsAction="never" />
+
 </menu>
