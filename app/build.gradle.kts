@@ -1,6 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
 }
+
+/**
+ * Release signing is read from `keystore.properties` (git-ignored) or from the
+ * OVERDRIVE_* environment variables, so no secrets live in the build script.
+ * Without either, the release build is simply left unsigned.
+ */
+val keystoreProps = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun signingValue(key: String, env: String): String? =
+    keystoreProps.getProperty(key) ?: System.getenv(env)
+
+val releaseStoreFile = signingValue("storeFile", "OVERDRIVE_STORE_FILE")
+    ?.let { rootProject.file(it) }
+    ?.takeIf { it.exists() }
 
 android {
     namespace = "com.overdrive.player"
@@ -12,24 +31,27 @@ android {
         applicationId = "com.overdrive.player"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
         vectorDrawables { useSupportLibrary = true }
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = rootProject.file("overdrive-release.jks")
-            storePassword = "overdrive"
-            keyAlias = "overdrive"
-            keyPassword = "overdrive"
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = releaseStoreFile
+                storePassword = signingValue("storePassword", "OVERDRIVE_STORE_PASSWORD")
+                keyAlias = signingValue("keyAlias", "OVERDRIVE_KEY_ALIAS")
+                keyPassword = signingValue("keyPassword", "OVERDRIVE_KEY_PASSWORD")
+            }
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.findByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -52,6 +74,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    lint {
+        abortOnError = true
+        warningsAsErrors = false
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {
@@ -64,10 +92,13 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.9")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 
     implementation("androidx.media3:media3-exoplayer:1.11.1")
     implementation("androidx.media3:media3-session:1.11.1")
     implementation("androidx.media3:media3-common:1.11.1")
+
+    testImplementation("junit:junit:4.13.2")
 }
