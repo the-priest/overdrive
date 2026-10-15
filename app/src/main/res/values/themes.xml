@@ -80,19 +80,7 @@
     </style>
 
     <!-- Text styles -->
-    <style name="TextAppearance.Overdrive.Title" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:fontFamily">sans-serif-condensed</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:letterSpacing">0.03</item>
-        <item name="android:textColor">@color/text_primary</item>
-    </style>
 
-    <style name="TextAppearance.Overdrive.Headline" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:fontFamily">sans-serif-condensed</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:letterSpacing">0.02</item>
-        <item name="android:textColor">@color/text_primary</item>
-    </style>
 
     <style name="Widget.Overdrive.Toolbar.Title" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:fontFamily">sans-serif-condensed</item>

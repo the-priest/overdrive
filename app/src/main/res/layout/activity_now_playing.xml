@@ -230,6 +230,7 @@
                 <ImageView
                     android:id="@+id/boostIcon"
                     style="@style/NowPlayingToolIcon"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/ic_bolt" />
 
                 <TextView
@@ -244,6 +245,7 @@
 
                 <ImageView
                     style="@style/NowPlayingToolIcon"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/ic_equalizer" />
 
                 <TextView
@@ -258,6 +260,7 @@
                 <ImageView
                     android:id="@+id/sleepIcon"
                     style="@style/NowPlayingToolIcon"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/ic_bedtime" />
 
                 <TextView
@@ -272,6 +275,7 @@
 
                 <ImageView
                     style="@style/NowPlayingToolIcon"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/ic_queue_music" />
 
                 <TextView

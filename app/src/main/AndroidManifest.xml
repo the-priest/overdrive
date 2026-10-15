@@ -53,9 +53,12 @@
             android:name=".ui.SettingsActivity"
             android:exported="false" />
 
+        <!-- Exported on purpose: system media controls, Bluetooth, Android Auto
+             and Wear connect to the media session through it. -->
         <service
             android:name=".player.PlaybackService"
             android:exported="true"
+            tools:ignore="ExportedService"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />

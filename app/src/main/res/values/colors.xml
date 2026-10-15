@@ -26,8 +26,5 @@
     <color name="rock_steel_dark">#FF173F86</color>
     <color name="rock_toxic">#FF8BF33A</color>
     <color name="rock_toxic_dark">#FF3B7A10</color>
-    <color name="rock_gold">#FFD4AF37</color>
 
-    <color name="scrim">#B3000000</color>
-    <color name="swipe_delete">#FF5A0A10</color>
 </resources>

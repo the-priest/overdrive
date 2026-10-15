@@ -6,12 +6,12 @@
         android:id="@+id/action_shuffle"
         android:icon="@drawable/ic_shuffle"
         android:title="@string/shuffle"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_clear"
         android:icon="@drawable/ic_clear_all"
         android:title="@string/queue_clear"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
 </menu>

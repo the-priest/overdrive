@@ -365,7 +365,11 @@ class NowPlayingActivity : AppCompatActivity() {
             metadata.artist?.let { append(" — ").append(it) }
         }
         binding.upNextCount.text =
-            if (upcoming.size > 1) getString(R.string.more_in_queue, upcoming.size - 1) else ""
+            if (upcoming.size > 1) {
+                resources.getQuantityString(R.plurals.more_in_queue, upcoming.size - 1, upcoming.size - 1)
+            } else {
+                ""
+            }
         ArtworkLoader.load(this, binding.upNextArt, metadata.artworkUri, next.item.audioUri, 128)
     }
 

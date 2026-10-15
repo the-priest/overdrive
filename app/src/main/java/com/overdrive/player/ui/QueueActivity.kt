@@ -3,7 +3,6 @@
 package com.overdrive.player.ui
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.toDrawable
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -275,7 +275,7 @@ class QueueActivity : AppCompatActivity() {
                         intArrayOf(ColorUtils.setAlphaComponent(accent, 0x40), 0x00000000)
                     ).apply { cornerRadius = 12 * context.resources.displayMetrics.density }
                 } else {
-                    ColorDrawable(ContextCompat.getColor(context, R.color.bg))
+                    ContextCompat.getColor(context, R.color.bg).toDrawable()
                 }
                 ArtworkLoader.load(context, b.art, metadata.artworkUri, item.audioUri, 128)
             }

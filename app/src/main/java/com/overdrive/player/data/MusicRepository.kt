@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -93,8 +94,7 @@ class MusicRepository(context: Context) {
     companion object {
         private const val TAG = "MusicRepository"
 
-        private val ALBUM_ART_BASE: Uri =
-            Uri.parse("content://media/external/audio/albumart")
+        private val ALBUM_ART_BASE: Uri = "content://media/external/audio/albumart".toUri()
 
         fun songUri(id: Long): Uri =
             ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)

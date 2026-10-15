@@ -18,7 +18,7 @@ object SleepTimerDialog {
         MINUTES.forEach { minutes ->
             labels.add(
                 if (minutes == 60) context.getString(R.string.sleep_hour)
-                else context.getString(R.string.sleep_minutes, minutes)
+                else context.resources.getQuantityString(R.plurals.sleep_minutes, minutes, minutes)
             )
         }
         labels.add(context.getString(R.string.sleep_end_of_track))
