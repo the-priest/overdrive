@@ -1,81 +1,123 @@
-# Overdrive — Android Music Player
+# ⚡ Overdrive — Android Music Player
 
-A no-nonsense, hard-rock themed music player. No ads, no accounts, no
-subscriptions. It scans your phone, plays your library, and gives you a proper
-equalizer with a volume booster that goes up to 200%.
-
-## Features
-
-- **Library scan** — reads your device's music through `MediaStore` and sorts it
-  into Songs, Albums, Artists and Favorites tabs.
-- **Real playback** — Media3 / ExoPlayer under the hood, so you get gapless
-  auto-advance to the next track, a proper queue, shuffle and repeat
-  (off / all / one).
-- **Background playback** — a foreground media service with a lock-screen /
-  notification transport. Keeps playing with the screen off.
-- **Equalizer** — graphic EQ with all of the device presets plus per-band
-  sliders, bass boost and a 3D virtualizer.
-- **Volume boost up to 200%** — mapped to a `LoudnessEnhancer`, i.e. up to
-  +20 dB of gain (about 4x perceived loudness at the top). Applies only to
-  Overdrive's own audio session, never to other apps.
-- **Favorites** — long-press any track to add/remove it.
-- **Rock styling** — dark charcoal + blood-red (Guns N' Roses) palette, bold
-  condensed type, lightning-bolt icon. Pick a Blood Red / Amped Amber / Steel
-  Blue accent in Settings.
-- **Sensible settings** — pause when headphones unplug, start in shuffle, hide
-  short clips, rescan the library.
+A no-nonsense, metal-styled music player for your local library. No ads, no
+accounts, no subscriptions. It scans your phone, plays your music loud, and
+gives you a proper equalizer with a volume booster up to 200%.
 
 ## Install
 
-A signed, ready-to-install APK is at the project root:
+**[⬇ Overdrive.apk](Overdrive.apk)** sits in the root of this repository. It's
+rebuilt and re-committed by CI on every push, so it's always the latest build.
 
-```
-Overdrive.apk
-```
+1. Download `Overdrive.apk` to your phone (open the file on GitHub → *Download raw file*).
+2. Open it and allow "Install unknown apps" for your browser / file manager if asked.
+3. On first launch, allow access to audio files so Overdrive can find your music.
 
-Copy it to your phone and open it (enable "Install unknown apps" for your file
-manager/browser if prompted). Or over USB:
+Or over USB: `adb install -r Overdrive.apk`
 
-```bash
-adb install -r Overdrive.apk
-```
+> **Updating from the old 1.0 build:** 1.0 was signed with your local
+> `overdrive-release.jks`, so Android won't install this build on top of it.
+> Uninstall 1.0 first, or set up the signing secrets below so CI signs with
+> that same key.
 
-The app asks for audio access on first launch so it can find your music.
+## Features
+
+**Playback**
+- Media3 / ExoPlayer engine: gapless playback, background play, lock-screen and
+  notification controls, headset buttons, audio focus.
+- **Up Next queue**: see exactly what plays next, in real play order (shuffle
+  included). Drag to reorder, swipe to remove (with undo), tap to jump,
+  clear everything that's coming up.
+- "Up next" preview card on Now Playing, plus a queue button on the mini player.
+- **Sleep timer**: 5–90 minutes or "end of this track", with a 10-second fade-out.
+- **Picks up where you left off**: the last queue and position come back on launch.
+- Shuffle and repeat (off / all / one) are remembered.
+- Swipe the cover art to skip, double-tap it to play/pause.
+
+**Sound**
+- Graphic equalizer using the device's own bands and presets.
+- Overdrive presets: **Metal, Rock, Djent, Doom, Vocals up, Flat**, mapped onto
+  whatever bands your phone has.
+- Bass boost and 3D virtualizer.
+- **Volume boost up to 200%** (up to +20 dB through `LoudnessEnhancer`). Only
+  affects Overdrive's audio, never other apps. Tap the ⚡ on Now Playing to
+  toggle it, long-press it to open the equalizer.
+
+**Library**
+- Songs, Albums, Artists and Favorites tabs.
+- Sort songs by title, artist, album, recently added or length.
+- Search across songs, albums and artists. Each word has to match, so
+  "metallica one" finds the right track.
+- Album pages list tracks in order with a big cover, Play and Shuffle buttons;
+  artist pages group tracks by album, newest first.
+- The track that's playing is highlighted in every list.
+- Hide short clips (voice notes, ringtones), rescan any time.
+
+**Look**
+- Dark gunmetal UI with condensed bold type and a lightning-bolt logo.
+- Now Playing tints itself from the album art.
+- Accents: Blood Red, Amped Amber, Steel Blue, Toxic Green.
+- Draws edge-to-edge on modern Android.
 
 ## Build from source
 
-Requirements: JDK 17, Android SDK with platform `android-37.2` and build-tools
-`37.0.0` (the Gradle wrapper downloads Gradle 9.6 automatically).
+Requirements: JDK 17+, Android SDK platform `android-37.2` and build-tools
+`37.0.0`. The Gradle wrapper downloads Gradle itself.
 
 ```bash
-./gradlew :app:assembleDebug     # debug APK
-./gradlew :app:assembleRelease   # signed release APK
-./gradlew installDebug           # build + install on a connected device
+./gradlew :app:testDebugUnitTest   # unit tests
+./gradlew :app:assembleDebug       # debug APK
+./gradlew :app:assembleRelease     # minified release APK
+./gradlew installDebug             # build + install on a connected device
 ```
 
-APK output:
-- `app/build/outputs/apk/debug/app-debug.apk`
-- `app/build/outputs/apk/release/app-release.apk`
+### Release signing
 
-> The demo release signing key lives at `overdrive-release.jks` (store/key
-> password `overdrive`). Replace it with your own before publishing anywhere.
+Signing keys are **not** stored in this repository. The release build is signed with, in order:
+
+1. `keystore.properties` in the project root (git-ignored). Copy
+   `keystore.properties.example` and fill it in.
+2. `OVERDRIVE_STORE_FILE`, `OVERDRIVE_STORE_PASSWORD`, `OVERDRIVE_KEY_ALIAS` and
+   `OVERDRIVE_KEY_PASSWORD` environment variables.
+3. If neither is set, the Android debug key, so the APK still installs.
+
+To have CI sign `Overdrive.apk` with your own key (so every update installs over
+the previous one), add these **repository secrets** under
+*Settings → Secrets and variables → Actions*:
+
+| Secret | Value |
+| --- | --- |
+| `OVERDRIVE_KEYSTORE_BASE64` | `base64 -w0 overdrive-release.jks` |
+| `OVERDRIVE_STORE_PASSWORD` | keystore password |
+| `OVERDRIVE_KEY_ALIAS` | key alias (e.g. `overdrive`) |
+| `OVERDRIVE_KEY_PASSWORD` | key password |
+
+Without them, CI signs with a fresh debug key on each run. Each new APK then
+has a different signature, so you have to uninstall before installing the
+next one.
+
+## CI
+
+GitHub Actions (`.github/workflows/android.yml`) runs the unit tests and lint,
+then builds the debug and R8-minified release APKs. It uploads both as build
+artifacts and commits the release APK as `Overdrive.apk`.
 
 ## Project layout
 
 ```
 app/src/main/java/com/overdrive/player/
 ├── OverdriveApp.kt          # process-wide singletons (settings, audio effects)
-├── audio/                   # Equalizer / BassBoost / Virtualizer / LoudnessEnhancer
-├── data/                    # MediaStore scan + Song/Album/Artist models
-├── player/                  # Media3 service, controller connection, queue helpers
+├── audio/                   # EQ / bass / virtualizer / loudness + metal EQ curves
+├── data/                    # MediaStore scan, Song/Album/Artist, pure library logic
+├── player/                  # Media3 service, controller connection, queue, sleep timer
 ├── prefs/                   # typed SharedPreferences wrapper
 ├── ui/                      # activities, fragments, adapters, ViewModel
-└── util/                    # artwork loader, formatters, theme helper
+└── util/                    # artwork loader, formatters, theming, insets
 ```
 
 ## Notes on the volume boost
 
-The boost uses Android's `LoudnessEnhancer` on the player's audio session, so it
-is applied digitally. Crank it past ~150% and poorly recorded tracks or tiny
-speakers may clip. That is exactly how the "volume booster" apps on the store do
-it — there is no magic beyond the platform effect.
+The boost uses Android's `LoudnessEnhancer` on the player's audio session, so
+the gain is digital. Past about 150%, badly mastered tracks or small speakers
+can clip. That's how every "volume booster" app works. The platform effect is
+all there is.
